@@ -193,7 +193,8 @@ public class HorseRaceMinigame : MonoBehaviour
         if (playerWon)
         {
             int lane = horses[luckyHorse].laneNumber;
-            Show($"¡GANASTE! +{goldOnWin} oro\nEl número de la suerte lo traía el caballo #{lane}");
+            string who = luckyHorse == playerHorseIndex ? "tu caballo" : $"el caballo #{lane}";
+            Show($"¡GANASTE! +{goldOnWin} oro\nEl número de la suerte lo traía {who}");
             onGoldEarned?.Invoke(goldOnWin);
             onLuckyHorseRevealed?.Invoke(lane);
         }
