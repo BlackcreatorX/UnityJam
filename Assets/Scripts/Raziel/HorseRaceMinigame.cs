@@ -116,7 +116,7 @@ public class HorseRaceMinigame : MonoBehaviour
         for (int i = 0; i < horses.Length; i++)
             if (i != playerHorseIndex) StartCoroutine(AiRoutine(horses[i]));
 
-        yield return Countdown("¡ARRANCAN!", countdownStep + 0.2f);
+        yield return Countdown("GO!", countdownStep + 0.2f);
         if (countdownRoot) countdownRoot.SetActive(false);
     }
 
@@ -147,7 +147,7 @@ public class HorseRaceMinigame : MonoBehaviour
     void OnShot(int pts)
     {
         if (raceOver) return;
-        ShowTemp(pts > 0 ? $"+{pts}" : "¡Fallaste!", shotMessageTime);
+        ShowTemp(pts > 0 ? $"+{pts}" : "Miss!", shotMessageTime);
         Move(Player, pts);
     }
 
@@ -193,14 +193,14 @@ public class HorseRaceMinigame : MonoBehaviour
         if (playerWon)
         {
             int lane = horses[luckyHorse].laneNumber;
-            string who = luckyHorse == playerHorseIndex ? "tu caballo" : $"el caballo #{lane}";
-            Show($"¡GANASTE! +{goldOnWin} oro\nEl número de la suerte lo traía {who}");
+            string who = luckyHorse == playerHorseIndex ? "your horse" : $"horse #{lane}";
+            Show($"YOU WIN! +{goldOnWin} gold\nThe lucky number was on {who}");
             onGoldEarned?.Invoke(goldOnWin);
             onLuckyHorseRevealed?.Invoke(lane);
         }
         else
         {
-            Show($"Ganó el caballo #{winner.laneNumber}\n+{goldOnLose} oro");
+            Show($"Horse #{winner.laneNumber} wins\n+{goldOnLose} gold");
             if (goldOnLose > 0) onGoldEarned?.Invoke(goldOnLose);
         }
 
