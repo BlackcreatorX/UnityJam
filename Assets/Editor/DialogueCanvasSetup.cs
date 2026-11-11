@@ -31,6 +31,7 @@ public static class DialogueCanvasSetup
         var canvas = canvasObject.GetComponent<Canvas>();
         canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         canvas.pixelPerfect = true;
+        canvas.sortingOrder = GetNextCanvasSortingOrder();
 
         var scaler = canvasObject.GetComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
@@ -39,11 +40,11 @@ public static class DialogueCanvasSetup
 
         // VN-style character art sits in the main screen area, independent of the dialogue box.
         // Keep it behind the panel in the hierarchy so the dialogue box remains readable.
-        var portraitRect = MakeRect("Character Portrait", canvasObject.transform, new Vector2(0.5f, 0f), new Vector2(0f, 0f), Vector2.zero);
-        portraitRect.anchorMin = new Vector2(0.5f, 0f);
-        portraitRect.anchorMax = new Vector2(1f, 1f);
-        portraitRect.offsetMin = new Vector2(0f, 245f);
-        portraitRect.offsetMax = new Vector2(-24f, -24f);
+        var portraitRect = MakeRect("Character Portrait", canvasObject.transform, new Vector2(0f, 0f), new Vector2(0f, 0f), Vector2.zero);
+        portraitRect.anchorMin = new Vector2(0f, 0f);
+        portraitRect.anchorMax = new Vector2(0.5f, 1f);
+        portraitRect.offsetMin = new Vector2(24f, 245f);
+        portraitRect.offsetMax = new Vector2(0f, -24f);
         var portrait = portraitRect.gameObject.AddComponent<Image>();
         portrait.color = Color.white;
         portrait.preserveAspect = true;
@@ -108,6 +109,16 @@ public static class DialogueCanvasSetup
 
         var eventSystem = new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
         Undo.RegisterCreatedObjectUndo(eventSystem, "Create Event System");
+    }
+
+    private static int GetNextCanvasSortingOrder()
+    {
+        int highestOrder = -1;
+        Canvas[] canvases = Object.FindObjectsByType<Canvas>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        foreach (var existingCanvas in canvases)
+            highestOrder = Mathf.Max(highestOrder, existingCanvas.sortingOrder);
+
+        return highestOrder + 1;
     }
 
     private static RectTransform MakeRect(string name, Transform parent, Vector2 anchor, Vector2 position, Vector2 size)

@@ -24,12 +24,23 @@ namespace DialogueSystem
         [Header("Particles")]
         [SerializeField] private bool parentParticlesToSpawnPoint;
 
+        [Header("Portrait")]
+        [SerializeField] private bool portraitStartsOnRight;
+        [Min(0.1f)] [SerializeField] private float portraitExitDuration = 0.8f;
+        [Min(0f)] [SerializeField] private float portraitCenterBounce = 32f;
+
         private Coroutine typewriterCoroutine;
+        private Coroutine portraitExitCoroutine;
         private bool isTyping;
         private ParticleSystem activeParticle;
+        private bool portraitOnRight;
+        private Vector3 portraitRestPosition;
 
         private void OnEnable()
         {
+            portraitOnRight = portraitStartsOnRight;
+            ApplyPortraitSide();
+
             if (dialogueManager == null)
             {
                 Debug.LogError("DialogueUI requires a DialogueManager reference.", this);
@@ -53,6 +64,7 @@ namespace DialogueSystem
                 dialogueManager.DialogueEnded -= HandleDialogueEnded;
             }
             StopTypewriter();
+            StopPortraitExit(restorePosition: false);
             DestroyActiveParticle();
         }
 
@@ -74,7 +86,47 @@ namespace DialogueSystem
 
         private void HandleDialogueStarted(DialogueSequence sequence)
         {
+            StopPortraitExit(restorePosition: true);
             if (dialoguePanel != null) dialoguePanel.SetActive(true);
+        }
+
+        /// <summary>Moves the portrait to the opposite half of the screen without changing its orientation.</summary>
+        public void SwapPortraitSide()
+        {
+            SetPortraitSide(!portraitOnRight);
+        }
+
+        /// <summary>Places the portrait on the requested side without reflecting its sprite.</summary>
+        public void SetPortraitSide(bool onRight)
+        {
+            if (portraitOnRight == onRight)
+                return;
+
+            StopPortraitExit(restorePosition: true);
+            portraitOnRight = onRight;
+            ApplyPortraitSide();
+        }
+
+        private void ApplyPortraitSide()
+        {
+            if (characterPortrait == null)
+                return;
+
+            var rect = characterPortrait.rectTransform;
+            Vector2 anchorMin = rect.anchorMin;
+            Vector2 anchorMax = rect.anchorMax;
+            Vector2 offsetMin = rect.offsetMin;
+            Vector2 offsetMax = rect.offsetMax;
+
+            anchorMin.x = portraitOnRight ? 0.5f : 0f;
+            anchorMax.x = portraitOnRight ? 1f : 0.5f;
+            offsetMin.x = portraitOnRight ? 0f : 24f;
+            offsetMax.x = portraitOnRight ? -24f : 0f;
+            rect.anchorMin = anchorMin;
+            rect.anchorMax = anchorMax;
+            rect.offsetMin = offsetMin;
+            rect.offsetMax = offsetMax;
+            portraitRestPosition = rect.localPosition;
         }
 
         private void HandleLineStarted(DialogueLine line)
@@ -194,6 +246,58 @@ namespace DialogueSystem
             DestroyActiveParticle();
             if (dialoguePanel != null) dialoguePanel.SetActive(false);
             SetContinueVisible(false);
+            StopPortraitExit(restorePosition: true);
+            if (characterPortrait != null && characterPortrait.enabled && characterPortrait.sprite != null)
+                portraitExitCoroutine = StartCoroutine(AnimatePortraitExit());
+        }
+
+        private IEnumerator AnimatePortraitExit()
+        {
+            RectTransform rect = characterPortrait.rectTransform;
+            float duration = Mathf.Max(0.1f, portraitExitDuration);
+            float sideDirection = portraitOnRight ? 1f : -1f;
+            RectTransform canvasRect = characterPortrait.canvas != null
+                ? characterPortrait.canvas.GetComponent<RectTransform>()
+                : null;
+            float width = canvasRect != null ? canvasRect.rect.width : Screen.width;
+            float exitX = -(width + rect.rect.width);
+            float inwardX = -sideDirection * portraitCenterBounce;
+            float recoilX = sideDirection * portraitCenterBounce * 0.2f;
+            Vector3 start = portraitRestPosition;
+
+            yield return MovePortrait(rect, start, start + Vector3.right * inwardX, duration * 0.24f);
+            yield return MovePortrait(rect, start + Vector3.right * inwardX, start + Vector3.right * recoilX, duration * 0.18f);
+            yield return MovePortrait(rect, start + Vector3.right * recoilX, start + Vector3.right * exitX, duration * 0.58f);
+
+            characterPortrait.enabled = false;
+            rect.localPosition = portraitRestPosition;
+            portraitExitCoroutine = null;
+        }
+
+        private static IEnumerator MovePortrait(RectTransform rect, Vector3 from, Vector3 to, float duration)
+        {
+            float elapsed = 0f;
+            while (elapsed < duration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = Mathf.Clamp01(elapsed / duration);
+                t = t * t * (3f - 2f * t);
+                rect.localPosition = Vector3.LerpUnclamped(from, to, t);
+                yield return null;
+            }
+            rect.localPosition = to;
+        }
+
+        private void StopPortraitExit(bool restorePosition)
+        {
+            if (portraitExitCoroutine != null)
+            {
+                StopCoroutine(portraitExitCoroutine);
+                portraitExitCoroutine = null;
+            }
+
+            if (restorePosition && characterPortrait != null)
+                characterPortrait.rectTransform.localPosition = portraitRestPosition;
         }
 
         private void DestroyActiveParticle()

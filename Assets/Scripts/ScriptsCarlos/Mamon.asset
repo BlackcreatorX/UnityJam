@@ -12,5 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dff51a029ba0b1a49a5192366f105b0f, type: 3}
   m_Name: Mamon
   m_EditorClassIdentifier: Assembly-CSharp::DialogueSystem.SpeakerData
-  speakerName: 
-  expressions: []
+  speakerName: MAMON
+  expressions:
+  - {fileID: 1866188646622025502, guid: 6972966714613364384bcc24e1d83002, type: 3}
+  - {fileID: -5091993161497071763, guid: 6972966714613364384bcc24e1d83002, type: 3}
+  - {fileID: 7175653148425225404, guid: 6972966714613364384bcc24e1d83002, type: 3}
+  - {fileID: -4519943713382314437, guid: 6972966714613364384bcc24e1d83002, type: 3}

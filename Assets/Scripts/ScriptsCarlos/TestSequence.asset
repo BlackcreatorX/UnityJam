@@ -12,4 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f235e9a96eb7bbb419458f22113d08f2, type: 3}
   m_Name: TestSequence
   m_EditorClassIdentifier: Assembly-CSharp::DialogueSystem.DialogueSequence
-  lines: []
+  lines:
+  - text: Hola soy una mona china y este es un dialogo
+    speaker: {fileID: 11400000, guid: b145a7a49d891f245977c18a56ff0d19, type: 2}
+    spriteIndex: 1
+    particlePrefab: {fileID: 0}
+  - text: hola este es el segundo dialogo
+    speaker: {fileID: 11400000, guid: b145a7a49d891f245977c18a56ff0d19, type: 2}
+    spriteIndex: 2
+    particlePrefab: {fileID: 0}
+  - text: adios esto fue suficiente
+    speaker: {fileID: 11400000, guid: b145a7a49d891f245977c18a56ff0d19, type: 2}
+    spriteIndex: 3
+    particlePrefab: {fileID: 0}
+  - text: dios mira que buenos comentarios
+    speaker: {fileID: 11400000, guid: b145a7a49d891f245977c18a56ff0d19, type: 2}
+    spriteIndex: 1
+    particlePrefab: {fileID: 0}
+  - text: wow
+    speaker: {fileID: 11400000, guid: b145a7a49d891f245977c18a56ff0d19, type: 2}
+    spriteIndex: 0
+    particlePrefab: {fileID: 0}
