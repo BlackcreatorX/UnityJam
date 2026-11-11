@@ -9,6 +9,10 @@ using System;
 [RequireComponent(typeof(AudioSource))]
 public class PokerManager : MonoBehaviour
 {
+    [Header("UI Instrucciones")]
+    public GameObject panelInstrucciones;
+    public GameObject botonIniciar;
+
     [Header("Referencias Generales")]
     public GameObject cardPrefab;
     public Sprite cardBackSprite;
@@ -22,21 +26,29 @@ public class PokerManager : MonoBehaviour
 
     [Header("UI Principal")]
     public TextMeshProUGUI resultText;
-    
-    [Header("UI Marcador y Rondas")]
     public TextMeshProUGUI scoreText; 
-    public GameObject actionButton; 
+    
+    // --- BOTONES ---
+    public GameObject botonDescarte;    
+    public GameObject actionButton;     
     private TextMeshProUGUI actionButtonText; 
+
+    [Header("Audio")]
+    public AudioClip sonidoMovimientoCarta;
+    public AudioClip sonidoVictoriaRonda;      
+    public AudioClip sonidoDerrotaRonda;
+    public AudioClip sonidoVictoriaDefinitiva; 
+    public AudioClip sonidoDerrotaDefinitiva;  
+    public AudioClip sonidoEmpate;             
+    private AudioSource audioSource;
 
     [Header("Ajustes Visuales")]
     public float velocidadReparto = 0.2f;
     public float tiempoGiro = 0.4f;
 
-    // Estados del juego
-    private enum EstadoJuego { Descartando, EsperandoSiguienteRonda, FinDePartida, Ocupado }
-    private EstadoJuego estadoActual = EstadoJuego.Ocupado;
+    private enum EstadoJuego { PausaInicial, Descartando, EsperandoShowdown, EsperandoSiguienteRonda, FinDePartida, Ocupado }
+    private EstadoJuego estadoActual = EstadoJuego.PausaInicial;
 
-    // Contadores
     private int victoriasJugador = 0;
     private int victoriasEnemigo = 0;
     private const int VICTORIAS_PARA_GANAR = 3;
@@ -44,16 +56,10 @@ public class PokerManager : MonoBehaviour
     private List<Card> mazo = new List<Card>();
     private Card[] manoJugador = new Card[5];
     private Card[] manoEnemigo = new Card[5];
-    
-    // Lista para rastrear todas las cartas en pantalla y borrarlas al final de la ronda
     private List<Card> todasLasCartasInstanciadas = new List<Card>();
 
-    private AudioSource audioSource;
-
-    // --- ENUMERADOR DE MANOS DE POKER ---
     public enum ClasificacionMano { CartaAlta, Par, DoblePar, Tercia, Escalera, Color, FullHouse, Poker, EscaleraColor, EscaleraReal }
 
-    // --- CLASE PARA EVALUAR Y COMPARAR MANOS ---
     private class ResultadoMano : IComparable<ResultadoMano>
     {
         public ClasificacionMano Clasificacion;
@@ -69,15 +75,34 @@ public class PokerManager : MonoBehaviour
                 if (this.Desempates[i] != otraMano.Desempates[i])
                     return this.Desempates[i].CompareTo(otraMano.Desempates[i]);
             }
-            return 0;
+            return 0; 
         }
     }
 
     private void Start()
     {
         audioSource = GetComponent<AudioSource>();
-        actionButtonText = actionButton.GetComponentInChildren<TextMeshProUGUI>();
+        if (actionButton != null) actionButtonText = actionButton.GetComponentInChildren<TextMeshProUGUI>();
         
+        panelInstrucciones.SetActive(true);
+        botonIniciar.SetActive(false);
+        
+        if (botonDescarte != null) botonDescarte.SetActive(false);
+        if (actionButton != null) actionButton.SetActive(false);
+        
+        resultText.text = "";
+        StartCoroutine(EsperarParaMostrarBoton());
+    }
+
+    private IEnumerator EsperarParaMostrarBoton()
+    {
+        yield return new WaitForSeconds(3f);
+        botonIniciar.SetActive(true);
+    }
+
+    public void EmpezarJuego()
+    {
+        panelInstrucciones.SetActive(false);
         ReiniciarJuegoCompleto();
     }
 
@@ -101,6 +126,22 @@ public class PokerManager : MonoBehaviour
         }
     }
 
+    public void OnBotonDescarteClicked()
+    {
+        if (estadoActual == EstadoJuego.Descartando)
+        {
+            ReproducirSonidoCarta();
+            estadoActual = EstadoJuego.Ocupado;
+            
+            botonDescarte.SetActive(false);
+            actionButton.SetActive(false);
+            
+            foreach (Card c in manoJugador) if (c != null) c.isSelectable = false;
+            
+            StartCoroutine(ProcesarIntercambioCartas(saltarDescarteJugador: false));
+        }
+    }
+
     public void OnActionButtonClicked()
     {
         ReproducirSonidoCarta();
@@ -108,9 +149,18 @@ public class PokerManager : MonoBehaviour
         if (estadoActual == EstadoJuego.Descartando)
         {
             estadoActual = EstadoJuego.Ocupado;
+            botonDescarte.SetActive(false); 
             actionButton.SetActive(false);
+            
             foreach (Card c in manoJugador) if (c != null) c.isSelectable = false;
-            StartCoroutine(ProcesarIntercambioCartas());
+            
+            StartCoroutine(ProcesarIntercambioCartas(saltarDescarteJugador: true));
+        }
+        else if (estadoActual == EstadoJuego.EsperandoShowdown)
+        {
+            estadoActual = EstadoJuego.Ocupado;
+            actionButton.SetActive(false);
+            StartCoroutine(ProcesarShowdown()); 
         }
         else if (estadoActual == EstadoJuego.EsperandoSiguienteRonda)
         {
@@ -126,6 +176,7 @@ public class PokerManager : MonoBehaviour
     {
         estadoActual = EstadoJuego.Ocupado;
         actionButton.SetActive(false);
+        botonDescarte.SetActive(false);
         resultText.text = "";
         LimpiarMesa();
         StartCoroutine(RutinaInicialPoker());
@@ -141,10 +192,7 @@ public class PokerManager : MonoBehaviour
 
     private void LimpiarMesa()
     {
-        foreach (Card c in todasLasCartasInstanciadas)
-        {
-            if (c != null) Destroy(c.gameObject);
-        }
+        foreach (Card c in todasLasCartasInstanciadas) if (c != null) Destroy(c.gameObject);
         todasLasCartasInstanciadas.Clear();
         mazo.Clear();
         
@@ -157,15 +205,24 @@ public class PokerManager : MonoBehaviour
 
     private void ActualizarTextoMarcador()
     {
-        scoreText.text = $"Jugador: {victoriasJugador}  |  Mammón: {victoriasEnemigo}";
+        if (scoreText != null) scoreText.text = $"Jugador: {victoriasJugador}  |  Mammon: {victoriasEnemigo}";
     }
 
     private void ReproducirSonidoCarta()
     {
-        if (audioSource != null && audioSource.clip != null)
+        if (audioSource != null && sonidoMovimientoCarta != null)
         {
             audioSource.pitch = UnityEngine.Random.Range(0.9f, 1.1f);
-            audioSource.Play();
+            audioSource.PlayOneShot(sonidoMovimientoCarta);
+        }
+    }
+
+    private void ReproducirSonidoResultado(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+        {
+            audioSource.pitch = 1f; 
+            audioSource.PlayOneShot(clip);
         }
     }
 
@@ -183,8 +240,9 @@ public class PokerManager : MonoBehaviour
         estadoActual = EstadoJuego.Descartando;
         foreach (Card c in manoJugador) if (c != null) c.isSelectable = true;
         
-        actionButtonText.text = "Confirmar Descarte";
-        actionButton.SetActive(true); 
+        botonDescarte.SetActive(true); 
+        actionButtonText.text = "Terminar ronda";
+        actionButton.SetActive(true);
     }
 
     private void GenerarMazo()
@@ -199,7 +257,7 @@ public class PokerManager : MonoBehaviour
                 nuevaCarta.Initialize(rango, palo, todosLosSpritesFrontales[spriteIndex], cardBackSprite);
                 
                 mazo.Add(nuevaCarta);
-                todasLasCartasInstanciadas.Add(nuevaCarta);
+                todasLasCartasInstanciadas.Add(nuevaCarta); 
                 spriteIndex++;
             }
         }
@@ -230,22 +288,27 @@ public class PokerManager : MonoBehaviour
         if (voltearBocaArriba) yield return StartCoroutine(cartaRobada.FlipAnimated(true, tiempoGiro));
     }
 
-    private IEnumerator ProcesarIntercambioCartas()
+    private IEnumerator ProcesarIntercambioCartas(bool saltarDescarteJugador)
     {
-        // Descartes del Jugador
-        for (int i = 0; i < 5; i++)
+        if (!saltarDescarteJugador)
         {
-            if (manoJugador[i] != null && manoJugador[i].isSelectedForDiscard)
+            for (int i = 0; i < 5; i++)
             {
-                Card c = manoJugador[i];
-                manoJugador[i] = null; 
-                c.spriteRenderer.color = Color.white; 
-                yield return StartCoroutine(c.MoveToPosition(discardPosition.position, velocidadReparto));
+                if (manoJugador[i] != null && manoJugador[i].isSelectedForDiscard)
+                {
+                    Card c = manoJugador[i];
+                    manoJugador[i] = null; 
+                    c.spriteRenderer.color = Color.white; 
+                    yield return StartCoroutine(c.MoveToPosition(discardPosition.position, velocidadReparto));
+                }
             }
+            for (int i = 0; i < 5; i++) if (manoJugador[i] == null) yield return StartCoroutine(RobarCarta(i, manoJugador, playerSlots[i], true));
         }
-        for (int i = 0; i < 5; i++) if (manoJugador[i] == null) yield return StartCoroutine(RobarCarta(i, manoJugador, playerSlots[i], true));
+        else
+        {
+            foreach (Card c in manoJugador) if (c != null && c.isSelectedForDiscard) c.ToggleDiscardSelection();
+        }
 
-        // Descartes del Enemigo
         for (int i = 0; i < 5; i++)
         {
             if (manoEnemigo[i] != null && manoEnemigo[i].rangoCarta < 11) 
@@ -257,6 +320,21 @@ public class PokerManager : MonoBehaviour
         }
         for (int i = 0; i < 5; i++) if (manoEnemigo[i] == null) yield return StartCoroutine(RobarCarta(i, manoEnemigo, enemySlots[i], false));
 
+        // 3. Decidir el siguiente paso
+        if (saltarDescarteJugador)
+        {
+            StartCoroutine(ProcesarShowdown());
+        }
+        else
+        {
+            estadoActual = EstadoJuego.EsperandoShowdown;
+            actionButtonText.text = "Terminar ronda";
+            actionButton.SetActive(true);
+        }
+    }
+
+    private IEnumerator ProcesarShowdown()
+    {
         for (int i = 0; i < 5; i++) if (manoEnemigo[i] != null) StartCoroutine(manoEnemigo[i].FlipAnimated(true, tiempoGiro));
         yield return new WaitForSeconds(tiempoGiro);
 
@@ -311,43 +389,46 @@ public class PokerManager : MonoBehaviour
         {
             resultText.text = $"¡GANASTE LA RONDA!\n({poderJugador.Clasificacion})";
             resultText.color = Color.green;
-            victoriasJugador++;
+            victoriasJugador++; 
         }
         else if (comparacion < 0)
         {
             resultText.text = $"¡PERDISTE LA RONDA!\n({poderEnemigo.Clasificacion})";
             resultText.color = Color.red;
-            victoriasEnemigo++;
+            victoriasEnemigo++; 
         }
         else
         {
-            // EMPATE DETECTADO: Nadie suma puntos
             resultText.text = $"¡EMPATE EXACTO!\nAmbos con {poderJugador.Clasificacion}";
             resultText.color = Color.yellow;
         }
 
         ActualizarTextoMarcador();
 
-        // Verificar si alguien llegó a las 3 victorias
         if (victoriasJugador >= VICTORIAS_PARA_GANAR)
         {
-            resultText.text += "\n\n<color=#00FF00>¡Ganaste la partida!</color>";
+            resultText.text += "\n\n<color=#00FF00>¡GANASTE LA PARTIDA!</color>";
             estadoActual = EstadoJuego.FinDePartida;
             actionButtonText.text = "Reiniciar Juego";
+            ReproducirSonidoResultado(sonidoVictoriaDefinitiva);
         }
         else if (victoriasEnemigo >= VICTORIAS_PARA_GANAR)
         {
-            resultText.text += "\n\n<color=#FF0000>¡Mammón gana la partida!</color>";
+            resultText.text += "\n\n<color=#FF0000>¡MAMMON GANA LA PARTIDA!</color>";
             estadoActual = EstadoJuego.FinDePartida;
             actionButtonText.text = "Reiniciar Juego";
+            ReproducirSonidoResultado(sonidoDerrotaDefinitiva);
         }
         else
         {
-            // Nadie ha ganado la partida aún
             estadoActual = EstadoJuego.EsperandoSiguienteRonda;
             actionButtonText.text = "Siguiente Ronda";
+            
+            if (comparacion > 0) ReproducirSonidoResultado(sonidoVictoriaRonda);
+            else if (comparacion < 0) ReproducirSonidoResultado(sonidoDerrotaRonda);
+            else ReproducirSonidoResultado(sonidoEmpate);
         }
 
-        actionButton.SetActive(true);
+        actionButton.SetActive(true); 
     }
 }
