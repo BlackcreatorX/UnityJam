@@ -13,7 +13,7 @@ public static class RRSceneCanvasSetup
     public static void Create()
     {
         var scene = EditorSceneManager.OpenScene("Assets/Scenes/Charlie scene.unity", OpenSceneMode.Single);
-        var oldScreen = Object.FindObjectOfType<RRMinigameScreen>();
+        var oldScreen = Object.FindFirstObjectByType<RRMinigameScreen>();
         if (oldScreen != null) Object.DestroyImmediate(oldScreen);
         var systems = new GameObject("Minigame Systems");
         var number = systems.AddComponent<RRLuckyNumberManager>();
@@ -24,7 +24,7 @@ public static class RRSceneCanvasSetup
         game.Configure(number, roulette, clues);
         var screen = systems.AddComponent<RRMinigameScreen>();
 
-        if (Object.FindObjectOfType<EventSystem>() == null)
+        if (Object.FindFirstObjectByType<EventSystem>() == null)
             new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
         var canvasGo = new GameObject("Minigame Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
         var canvas = canvasGo.GetComponent<Canvas>(); canvas.renderMode = RenderMode.ScreenSpaceOverlay; canvas.pixelPerfect = true;
