@@ -31,9 +31,9 @@ public class MinigameManager : MonoBehaviour
     public AudioClip sonidoMovimientoCarta;
     public AudioClip sonidoVictoriaRonda;      
     public AudioClip sonidoDerrotaRonda;
-    public AudioClip sonidoVictoriaDefinitiva;
-    public AudioClip sonidoDerrotaDefinitiva;
-    public AudioClip sonidoEmpate;
+    public AudioClip sonidoVictoriaDefinitiva; 
+    public AudioClip sonidoDerrotaDefinitiva;  
+    public AudioClip sonidoEmpate;             
     private AudioSource audioSource;
 
     [Header("Ajustes de Tiempos")]
@@ -52,7 +52,7 @@ public class MinigameManager : MonoBehaviour
     private const int VICTORIAS_PARA_GANAR = 3;
 
     private List<Card> activeCards = new List<Card>();
-    private List<Card> cartasEnMesa = new List<Card>();
+    private List<Card> cartasEnMesa = new List<Card>(); 
     private Card playerCard;
     private Card enemyCard;
 
@@ -62,27 +62,25 @@ public class MinigameManager : MonoBehaviour
         if (actionButton != null) actionButtonText = actionButton.GetComponentInChildren<TextMeshProUGUI>();
         
         panelInstrucciones.SetActive(true);
-        botonIniciar.SetActive(false);
+        if (botonIniciar != null) botonIniciar.SetActive(false);
         if (actionButton != null) actionButton.SetActive(false);
         resultText.text = "";
-        
-        StartCoroutine(EsperarParaMostrarBoton());
-    }
-
-    private IEnumerator EsperarParaMostrarBoton()
-    {
-        yield return new WaitForSeconds(3f);
-        botonIniciar.SetActive(true);
-    }
-
-    public void EmpezarJuego()
-    {
-        panelInstrucciones.SetActive(false);
-        ReiniciarJuegoCompleto();
     }
 
     private void Update()
     {
+        if (estadoActual == EstadoJuego.PausaInicial)
+        {
+            bool clickMouse = Pointer.current != null && Pointer.current.press.wasPressedThisFrame;
+            bool teclaE = Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame;
+
+            if (clickMouse || teclaE)
+            {
+                EmpezarJuego();
+            }
+            return;
+        }
+
         if (Pointer.current != null && Pointer.current.press.wasPressedThisFrame && estadoActual == EstadoJuego.EsperandoSeleccion)
         {
             Vector2 pointerScreenPos = Pointer.current.position.ReadValue();
@@ -94,6 +92,15 @@ public class MinigameManager : MonoBehaviour
                 Card clickedCard = hit.collider.GetComponent<Card>();
                 if (clickedCard != null && activeCards.Contains(clickedCard)) clickedCard.Select();
             }
+        }
+    }
+
+    public void EmpezarJuego()
+    {
+        if (estadoActual == EstadoJuego.PausaInicial)
+        {
+            panelInstrucciones.SetActive(false);
+            ReiniciarJuegoCompleto();
         }
     }
 
@@ -160,7 +167,6 @@ public class MinigameManager : MonoBehaviour
         {
             GameObject newCardObj = Instantiate(cardPrefab, linePositions[i].position, Quaternion.identity);
             Card card = newCardObj.GetComponent<Card>();
-            
             card.Initialize(i + 1, cardFrontSprites[i], cardBackSprite);
             card.OnCardClicked += HandleCardSelected;
             activeCards.Add(card);
@@ -221,7 +227,6 @@ public class MinigameManager : MonoBehaviour
         StartCoroutine(enemyCard.FlipAnimated(true, tiempoAnimacionVolteo));
         yield return new WaitForSeconds(tiempoAnimacionVolteo);
 
-        //Evaluacion de ganador
         bool ganaRonda = playerCard.value > enemyCard.value;
         bool pierdeRonda = playerCard.value < enemyCard.value;
 
@@ -245,27 +250,24 @@ public class MinigameManager : MonoBehaviour
 
         ActualizarTextoMarcador();
 
-        // Verificar si alguien ganó la partida completa (3 victorias)
         if (victoriasJugador >= VICTORIAS_PARA_GANAR)
         {
             resultText.text += "\n\n<color=#00FF00>¡GANASTE LA PARTIDA!</color>";
             estadoActual = EstadoJuego.FinDePartida;
             actionButtonText.text = "Reiniciar Juego";
-            ReproducirSonidoResultado(sonidoVictoriaDefinitiva);
+            ReproducirSonidoResultado(sonidoVictoriaDefinitiva); 
         }
         else if (victoriasEnemigo >= VICTORIAS_PARA_GANAR)
         {
-            resultText.text += "\n\n<color=#FF0000>¡LA IA GANA LA PARTIDA!</color>";
+            resultText.text += "\n\n<color=#FF0000>¡MAMMON GANA LA PARTIDA!</color>";
             estadoActual = EstadoJuego.FinDePartida;
             actionButtonText.text = "Reiniciar Juego";
-            ReproducirSonidoResultado(sonidoDerrotaDefinitiva);
+            ReproducirSonidoResultado(sonidoDerrotaDefinitiva); 
         }
         else
         {
             estadoActual = EstadoJuego.EsperandoSiguienteRonda;
             actionButtonText.text = "Siguiente Ronda";
-            
-            // Sonidos de Ronda normal
             if (ganaRonda) ReproducirSonidoResultado(sonidoVictoriaRonda);
             else if (pierdeRonda) ReproducirSonidoResultado(sonidoDerrotaRonda);
             else ReproducirSonidoResultado(sonidoEmpate);
