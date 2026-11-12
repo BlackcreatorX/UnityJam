@@ -27,8 +27,6 @@ public class PokerManager : MonoBehaviour
     [Header("UI Principal")]
     public TextMeshProUGUI resultText;
     public TextMeshProUGUI scoreText; 
-    
-    // --- BOTONES ---
     public GameObject botonDescarte;    
     public GameObject actionButton;     
     private TextMeshProUGUI actionButtonText; 
@@ -67,13 +65,10 @@ public class PokerManager : MonoBehaviour
 
         public int CompareTo(ResultadoMano otraMano)
         {
-            if (this.Clasificacion != otraMano.Clasificacion)
-                return this.Clasificacion.CompareTo(otraMano.Clasificacion);
-
+            if (this.Clasificacion != otraMano.Clasificacion) return this.Clasificacion.CompareTo(otraMano.Clasificacion);
             for (int i = 0; i < this.Desempates.Count; i++)
             {
-                if (this.Desempates[i] != otraMano.Desempates[i])
-                    return this.Desempates[i].CompareTo(otraMano.Desempates[i]);
+                if (this.Desempates[i] != otraMano.Desempates[i]) return this.Desempates[i].CompareTo(otraMano.Desempates[i]);
             }
             return 0; 
         }
@@ -85,29 +80,27 @@ public class PokerManager : MonoBehaviour
         if (actionButton != null) actionButtonText = actionButton.GetComponentInChildren<TextMeshProUGUI>();
         
         panelInstrucciones.SetActive(true);
-        botonIniciar.SetActive(false);
-        
+        if (botonIniciar != null) botonIniciar.SetActive(false);
         if (botonDescarte != null) botonDescarte.SetActive(false);
         if (actionButton != null) actionButton.SetActive(false);
         
         resultText.text = "";
-        StartCoroutine(EsperarParaMostrarBoton());
-    }
-
-    private IEnumerator EsperarParaMostrarBoton()
-    {
-        yield return new WaitForSeconds(3f);
-        botonIniciar.SetActive(true);
-    }
-
-    public void EmpezarJuego()
-    {
-        panelInstrucciones.SetActive(false);
-        ReiniciarJuegoCompleto();
     }
 
     private void Update()
     {
+        if (estadoActual == EstadoJuego.PausaInicial)
+        {
+            bool clickMouse = Pointer.current != null && Pointer.current.press.wasPressedThisFrame;
+            bool teclaE = Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame;
+
+            if (clickMouse || teclaE)
+            {
+                EmpezarJuego();
+            }
+            return;
+        }
+
         if (Pointer.current != null && Pointer.current.press.wasPressedThisFrame && estadoActual == EstadoJuego.Descartando)
         {
             Vector2 pointerScreenPos = Pointer.current.position.ReadValue();
@@ -126,18 +119,24 @@ public class PokerManager : MonoBehaviour
         }
     }
 
+    public void EmpezarJuego()
+    {
+        if (estadoActual == EstadoJuego.PausaInicial)
+        {
+            panelInstrucciones.SetActive(false);
+            ReiniciarJuegoCompleto();
+        }
+    }
+
     public void OnBotonDescarteClicked()
     {
         if (estadoActual == EstadoJuego.Descartando)
         {
             ReproducirSonidoCarta();
             estadoActual = EstadoJuego.Ocupado;
-            
-            botonDescarte.SetActive(false);
-            actionButton.SetActive(false);
-            
+            botonDescarte.SetActive(false); 
+            actionButton.SetActive(false);  
             foreach (Card c in manoJugador) if (c != null) c.isSelectable = false;
-            
             StartCoroutine(ProcesarIntercambioCartas(saltarDescarteJugador: false));
         }
     }
@@ -151,9 +150,7 @@ public class PokerManager : MonoBehaviour
             estadoActual = EstadoJuego.Ocupado;
             botonDescarte.SetActive(false); 
             actionButton.SetActive(false);
-            
             foreach (Card c in manoJugador) if (c != null) c.isSelectable = false;
-            
             StartCoroutine(ProcesarIntercambioCartas(saltarDescarteJugador: true));
         }
         else if (estadoActual == EstadoJuego.EsperandoShowdown)
@@ -162,14 +159,8 @@ public class PokerManager : MonoBehaviour
             actionButton.SetActive(false);
             StartCoroutine(ProcesarShowdown()); 
         }
-        else if (estadoActual == EstadoJuego.EsperandoSiguienteRonda)
-        {
-            IniciarSiguienteRonda();
-        }
-        else if (estadoActual == EstadoJuego.FinDePartida)
-        {
-            ReiniciarJuegoCompleto();
-        }
+        else if (estadoActual == EstadoJuego.EsperandoSiguienteRonda) IniciarSiguienteRonda();
+        else if (estadoActual == EstadoJuego.FinDePartida) ReiniciarJuegoCompleto();
     }
 
     private void IniciarSiguienteRonda()
@@ -195,12 +186,7 @@ public class PokerManager : MonoBehaviour
         foreach (Card c in todasLasCartasInstanciadas) if (c != null) Destroy(c.gameObject);
         todasLasCartasInstanciadas.Clear();
         mazo.Clear();
-        
-        for (int i = 0; i < 5; i++)
-        {
-            manoJugador[i] = null;
-            manoEnemigo[i] = null;
-        }
+        for (int i = 0; i < 5; i++) { manoJugador[i] = null; manoEnemigo[i] = null; }
     }
 
     private void ActualizarTextoMarcador()
@@ -241,7 +227,7 @@ public class PokerManager : MonoBehaviour
         foreach (Card c in manoJugador) if (c != null) c.isSelectable = true;
         
         botonDescarte.SetActive(true); 
-        actionButtonText.text = "Terminar ronda";
+        actionButtonText.text = "Mostrar Resultados";
         actionButton.SetActive(true);
     }
 
@@ -255,7 +241,6 @@ public class PokerManager : MonoBehaviour
                 GameObject obj = Instantiate(cardPrefab, deckPosition.position, Quaternion.identity);
                 Card nuevaCarta = obj.GetComponent<Card>();
                 nuevaCarta.Initialize(rango, palo, todosLosSpritesFrontales[spriteIndex], cardBackSprite);
-                
                 mazo.Add(nuevaCarta);
                 todasLasCartasInstanciadas.Add(nuevaCarta); 
                 spriteIndex++;
@@ -277,14 +262,11 @@ public class PokerManager : MonoBehaviour
     private IEnumerator RobarCarta(int slotIndex, Card[] mano, Transform slotDestino, bool voltearBocaArriba)
     {
         if (mazo.Count == 0) yield break;
-
         Card cartaRobada = mazo[0];
         mazo.RemoveAt(0);
         mano[slotIndex] = cartaRobada;
-
         ReproducirSonidoCarta();
         yield return StartCoroutine(cartaRobada.MoveToPosition(slotDestino.position, velocidadReparto));
-
         if (voltearBocaArriba) yield return StartCoroutine(cartaRobada.FlipAnimated(true, tiempoGiro));
     }
 
@@ -320,15 +302,11 @@ public class PokerManager : MonoBehaviour
         }
         for (int i = 0; i < 5; i++) if (manoEnemigo[i] == null) yield return StartCoroutine(RobarCarta(i, manoEnemigo, enemySlots[i], false));
 
-        // 3. Decidir el siguiente paso
-        if (saltarDescarteJugador)
-        {
-            StartCoroutine(ProcesarShowdown());
-        }
+        if (saltarDescarteJugador) StartCoroutine(ProcesarShowdown());
         else
         {
             estadoActual = EstadoJuego.EsperandoShowdown;
-            actionButtonText.text = "Terminar ronda";
+            actionButtonText.text = "Mostrar Resultados";
             actionButton.SetActive(true);
         }
     }
@@ -337,7 +315,6 @@ public class PokerManager : MonoBehaviour
     {
         for (int i = 0; i < 5; i++) if (manoEnemigo[i] != null) StartCoroutine(manoEnemigo[i].FlipAnimated(true, tiempoGiro));
         yield return new WaitForSeconds(tiempoGiro);
-
         DeterminarGanador();
     }
 
@@ -423,7 +400,6 @@ public class PokerManager : MonoBehaviour
         {
             estadoActual = EstadoJuego.EsperandoSiguienteRonda;
             actionButtonText.text = "Siguiente Ronda";
-            
             if (comparacion > 0) ReproducirSonidoResultado(sonidoVictoriaRonda);
             else if (comparacion < 0) ReproducirSonidoResultado(sonidoDerrotaRonda);
             else ReproducirSonidoResultado(sonidoEmpate);

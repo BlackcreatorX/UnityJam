@@ -1,35 +1,79 @@
 using UnityEngine;
+using UnityEngine.InputSystem; 
 using TMPro;
 using UnityEngine.UI;
 using System.Collections;
 
+[RequireComponent(typeof(AudioSource))]
 public class RuletaPremios : MonoBehaviour
 {
+    [Header("UI Instrucciones")]
+    public GameObject panelInstrucciones;
+    public GameObject botonIniciar;
+
     [Header("Configuración Visual")]
-    [Tooltip("El Transform del objeto que contiene el sprite de la rueda giratoria")]
     public Transform ruedaTransform; 
-    
-    [Tooltip("Lista de premios. Empieza por el que está arriba y sigue el orden en el sentido de las manecillas del reloj")]
     public string[] premios; 
 
     [Header("Ajustes de Giro")]
     public float tiempoGiro = 4f;
-    [Tooltip("Cuántas vueltas completas dará como mínimo antes de detenerse")]
     public int vueltasMinimas = 5;
-    
-    [Tooltip("Ajusta este valor (ej. 0 a 360) si el premio seleccionado no coincide con el puntero visual")]
     public float ajusteAngulo = 0f; 
 
-    [Header("UI")]
+    [Header("UI Principal")]
     public TextMeshProUGUI textoResultado;
     public Button botonGirar;
+
+    [Header("Audio")]
+    public AudioClip sonidoGiroTick; 
+    public AudioClip sonidoPremio;
+    private AudioSource audioSource;
 
     private bool estaGirando = false;
 
     void Start()
     {
+        audioSource = GetComponent<AudioSource>();
         botonGirar.onClick.AddListener(IniciarGiro);
-        textoResultado.text = "¡Gira la ruleta para probar tu suerte!";
+        
+        // Estado inicial de espera
+        panelInstrucciones.SetActive(true);
+        if (botonIniciar != null) botonIniciar.SetActive(false);
+        botonGirar.gameObject.SetActive(false);
+        textoResultado.text = "";
+    }
+
+    void Update()
+    {
+        if (panelInstrucciones.activeSelf)
+        {
+            bool clickMouse = Pointer.current != null && Pointer.current.press.wasPressedThisFrame;
+            bool teclaE = Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame;
+
+            if (clickMouse || teclaE)
+            {
+                EmpezarJuego();
+            }
+        }
+    }
+
+    public void EmpezarJuego()
+    {
+        if (panelInstrucciones.activeSelf)
+        {
+            panelInstrucciones.SetActive(false);
+            botonGirar.gameObject.SetActive(true);
+            textoResultado.text = "¡Presiona Girar para probar tu suerte!";
+        }
+    }
+
+    private void ReproducirSonido(AudioClip clip, bool variarTono)
+    {
+        if (audioSource != null && clip != null)
+        {
+            audioSource.pitch = variarTono ? Random.Range(0.9f, 1.1f) : 1f;
+            audioSource.PlayOneShot(clip);
+        }
     }
 
     public void IniciarGiro()
@@ -48,27 +92,40 @@ public class RuletaPremios : MonoBehaviour
 
         float anguloInicial = ruedaTransform.eulerAngles.z;
         float rotacionAleatoria = Random.Range(0f, 360f);
-        
         float rotacionTotal = -(360f * vueltasMinimas + rotacionAleatoria);
         float anguloObjetivo = anguloInicial + rotacionTotal;
 
         float tiempoTranscurrido = 0f;
+        float gradosPorPremio = 360f / premios.Length;
+        float anguloUltimoFrame = anguloInicial;
+        float rotacionAcumuladaParaSonido = 0f;
 
         while (tiempoTranscurrido < tiempoGiro)
         {
             tiempoTranscurrido += Time.deltaTime;
             
             float t = tiempoTranscurrido / tiempoGiro;
-            float tSuavizado = 1f - Mathf.Pow(1f - t, 3f);
+            float tSuavizado = 1f - Mathf.Pow(1f - t, 3f); 
 
             float anguloActual = Mathf.Lerp(anguloInicial, anguloObjetivo, tSuavizado);
             ruedaTransform.eulerAngles = new Vector3(0, 0, anguloActual);
+
+            float deltaRotacion = Mathf.Abs(anguloActual - anguloUltimoFrame);
+            rotacionAcumuladaParaSonido += deltaRotacion;
+            
+            if (rotacionAcumuladaParaSonido >= gradosPorPremio)
+            {
+                ReproducirSonido(sonidoGiroTick, true);
+                rotacionAcumuladaParaSonido -= gradosPorPremio; 
+            }
+            anguloUltimoFrame = anguloActual;
 
             yield return null;
         }
 
         ruedaTransform.eulerAngles = new Vector3(0, 0, anguloObjetivo);
-
+        
+        ReproducirSonido(sonidoPremio, false);
         DeterminarPremio();
 
         estaGirando = false;
@@ -81,14 +138,12 @@ public class RuletaPremios : MonoBehaviour
         if (anguloFinalZ < 0) anguloFinalZ += 360f;
 
         float anguloCorregido = (anguloFinalZ + ajusteAngulo) % 360f;
-
         float gradosPorPremio = 360f / premios.Length;
 
         int indicePremio = Mathf.FloorToInt(anguloCorregido / gradosPorPremio);
-
         indicePremio = indicePremio % premios.Length;
 
         string premioGanado = premios[indicePremio];
-        textoResultado.text = $"Ganaste: <color=#FFD700>{premioGanado}</color>";
+        textoResultado.text = $"¡Felicidades!\nGanaste: <color=#FFD700>{premioGanado}</color>";
     }
 }
