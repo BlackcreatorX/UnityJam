@@ -72,7 +72,7 @@ public class HorseRaceMinigame : MonoBehaviour
         luckyNumber = Mathf.Clamp(number, 1, 6);
     }
 
-    public void StartRace()
+    public void StartMinigame()
     {
         StopAllCoroutines();
         StartCoroutine(RaceRoutine());
@@ -90,7 +90,7 @@ public class HorseRaceMinigame : MonoBehaviour
 
     void Start()
     {
-        if (autoStart) StartRace();
+        if (autoStart) StartMinigame();
     }
 
     IEnumerator RaceRoutine()
