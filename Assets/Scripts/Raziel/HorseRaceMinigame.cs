@@ -71,7 +71,8 @@ public class HorseRaceMinigame : MonoBehaviour
     {
         luckyNumber = Mathf.Clamp(number, 1, 6);
     }
-
+    // Arranca la carrera. Se llama al terminar el dialogo
+    // dialogueManager.DialogueEnded += horseRace.StartMinigame;
     public void StartMinigame()
     {
         StopAllCoroutines();
