@@ -25,7 +25,7 @@ public class RRMinigameScreen : MonoBehaviour
             return;
         }
         if (usePlaceholderNumber) StartWithNumber(placeholderNumber);
-        else statusText.text = "Esperando el número del manager externo…";
+        else statusText.text = "Waiting for the external manager to provide a number…";
         Refresh();
     }
 
@@ -52,11 +52,11 @@ public class RRMinigameScreen : MonoBehaviour
         if (numberManager.CheckGuess(value))
         {
             gameManager.WinGame();
-            statusText.text = "¡Correcto! Ganaste.";
+            statusText.text = "Correct! You win.";
         }
         else
         {
-            statusText.text = "No era ese número. Intenta otra vez.";
+            statusText.text = "That is not the right number. Try again.";
             gameManager.UseAction();
         }
         Refresh();
@@ -74,7 +74,7 @@ public class RRMinigameScreen : MonoBehaviour
     {
         if (ended || !gameManager.CanPerformAction()) return;
         rouletteManager.SpinRoulette();
-        chamberText.text = "Ruleta girada: cámara " + (rouletteManager.CurrentChamber + 1) + "/" + rouletteManager.ChamberCount;
+        chamberText.text = "Roulette spun: chamber " + (rouletteManager.CurrentChamber + 1) + "/" + rouletteManager.ChamberCount;
         gameManager.UseAction();
         Refresh();
     }
@@ -85,12 +85,12 @@ public class RRMinigameScreen : MonoBehaviour
         bool bulletFired = rouletteManager.PullTrigger();
         if (bulletFired)
         {
-            chamberText.text = "¡BANG! La ruleta alcanzó la bala.";
+            chamberText.text = "BANG! The bullet was fired.";
             gameManager.PlayerShot(false);
         }
         else
         {
-            chamberText.text = "Click. Cámara vacía.";
+            chamberText.text = "Click. Empty chamber.";
             gameManager.PlayerShot(true);
         }
         Refresh();
@@ -99,14 +99,14 @@ public class RRMinigameScreen : MonoBehaviour
     private void Refresh()
     {
         if (turnsText == null || gameManager == null) return;
-        turnsText.text = "Turnos restantes: " + gameManager.RemainingTurns;
+        turnsText.text = "Turns remaining: " + gameManager.RemainingTurns;
         var clues = clueManager.GetDiscoveredClues();
-        cluesText.text = clues.Count == 0 ? "Pistas: ninguna" : "Pistas:\n• " + string.Join("\n• ", clues);
+        cluesText.text = clues.Count == 0 ? "Clues: none" : "Clues:\n• " + string.Join("\n• ", clues);
         var state = gameManager.CurrentState;
         ended = state == RRGameManager.GameState.Victory || state == RRGameManager.GameState.Defeat;
-        if (state == RRGameManager.GameState.ForcedShot) statusText.text = "Te quedaste sin turnos: debes jalar el gatillo.";
-        if (state == RRGameManager.GameState.Defeat) statusText.text = "Fin de la partida: la ruleta disparó.";
-        if (state == RRGameManager.GameState.Victory) statusText.text = "¡Ganaste! Adivinaste el número.";
+        if (state == RRGameManager.GameState.ForcedShot) statusText.text = "Out of turns: you must pull the trigger.";
+        if (state == RRGameManager.GameState.Defeat) statusText.text = "Game over: the roulette fired.";
+        if (state == RRGameManager.GameState.Victory) statusText.text = "You win! You guessed the number.";
         if (gameplayButtons != null) foreach (var button in gameplayButtons) if (button != null) button.interactable = !ended;
     }
 }

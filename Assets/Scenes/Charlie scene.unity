@@ -176,7 +176,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Girar ruleta
+  m_text: Spin Roulette
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e524087a28830ee42a4b59111b40bdea, type: 2}
   m_sharedMaterial: {fileID: -3490047092283990496, guid: e524087a28830ee42a4b59111b40bdea, type: 2}
@@ -895,7 +895,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Ruleta: lista'
+  m_text: 'Roulette: Ready'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1066,7 +1066,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Preparando partida\u2026"
+  m_text: "Preparing game\u2026"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -1454,7 +1454,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Revelar pista
+  m_text: Reveal Clue
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e524087a28830ee42a4b59111b40bdea, type: 2}
   m_sharedMaterial: {fileID: -3490047092283990496, guid: e524087a28830ee42a4b59111b40bdea, type: 2}
@@ -1929,7 +1929,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Turnos: \u2014"
+  m_text: "Turns: \u2014"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e524087a28830ee42a4b59111b40bdea, type: 2}
   m_sharedMaterial: {fileID: -3490047092283990496, guid: e524087a28830ee42a4b59111b40bdea, type: 2}
@@ -4334,7 +4334,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Adivina el n\xFAmero del manager. La ruleta del enemigo es aleatoria."
+  m_text: "Guess the manager\x27s number. The enemy\x27s roulette is random."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e524087a28830ee42a4b59111b40bdea, type: 2}
   m_sharedMaterial: {fileID: -3490047092283990496, guid: e524087a28830ee42a4b59111b40bdea, type: 2}
@@ -4471,7 +4471,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Jalar gatillo
+  m_text: Pull the Trigger
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e524087a28830ee42a4b59111b40bdea, type: 2}
   m_sharedMaterial: {fileID: -3490047092283990496, guid: e524087a28830ee42a4b59111b40bdea, type: 2}
@@ -5052,7 +5052,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Pistas: ninguna'
+  m_text: 'Clues: none'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e524087a28830ee42a4b59111b40bdea, type: 2}
   m_sharedMaterial: {fileID: -3490047092283990496, guid: e524087a28830ee42a4b59111b40bdea, type: 2}
