@@ -17,6 +17,7 @@ public class RRClueManager : MonoBehaviour
 
     private List<string> availableClues = new List<string>();
     private List<string> discoveredClues = new List<string>();
+    private int totalRevealedClues;
 
     public int DiscoveredClueCount => discoveredClues.Count;
     public bool HasAvailableClues => availableClues.Count > 0;
@@ -30,6 +31,7 @@ public class RRClueManager : MonoBehaviour
     {
         availableClues.Clear();
         discoveredClues.Clear();
+        totalRevealedClues = 0;
 
         if (luckyNumberManager == null)
         {
@@ -105,7 +107,7 @@ public class RRClueManager : MonoBehaviour
 
     public void RevealClue()
     {
-        if (discoveredClues.Count >= maxClues ||
+        if (totalRevealedClues >= maxClues ||
             availableClues.Count == 0)
         {
             OnNoMoreClues?.Invoke();
@@ -115,6 +117,9 @@ public class RRClueManager : MonoBehaviour
         string clue = availableClues[0];
 
         availableClues.RemoveAt(0);
+        totalRevealedClues++;
+        if (discoveredClues.Count >= 2)
+            discoveredClues.RemoveAt(0);
         discoveredClues.Add(clue);
 
         OnClueGenerated?.Invoke(clue);
