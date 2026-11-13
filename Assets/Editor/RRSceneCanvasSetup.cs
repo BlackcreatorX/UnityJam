@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public static class RRSceneCanvasSetup
 {
@@ -13,8 +14,10 @@ public static class RRSceneCanvasSetup
     public static void Create()
     {
         var scene = EditorSceneManager.OpenScene("Assets/Scenes/Charlie scene.unity", OpenSceneMode.Single);
-        var oldScreen = Object.FindFirstObjectByType<RRMinigameScreen>();
-        if (oldScreen != null) Object.DestroyImmediate(oldScreen);
+        // Replace the previously generated minigame objects so the saved scene
+        // receives fresh TMP components and matching serialized references.
+        DestroyGeneratedRoots("Minigame Systems");
+        DestroyGeneratedRoots("Minigame Canvas");
         var systems = new GameObject("Minigame Systems");
         var number = systems.AddComponent<RRLuckyNumberManager>();
         var roulette = systems.AddComponent<RRouletteManager>();
@@ -63,15 +66,25 @@ public static class RRSceneCanvasSetup
         AssetDatabase.SaveAssets();
     }
 
+    static void DestroyGeneratedRoots(string generatedName)
+    {
+        var roots = EditorSceneManager.GetActiveScene().GetRootGameObjects();
+        foreach (var root in roots)
+        {
+            if (root.name == generatedName || root.name.StartsWith(generatedName + " ("))
+                Object.DestroyImmediate(root);
+        }
+    }
+
     static RectTransform MakeRect(string name, Transform parent, Vector2 anchor, Vector2 pos, Vector2 size)
     {
         var go=new GameObject(name,typeof(RectTransform)); go.transform.SetParent(parent,false);
         var r=go.GetComponent<RectTransform>(); r.anchorMin=anchor; r.anchorMax=anchor; r.anchoredPosition=pos; r.sizeDelta=size; return r;
     }
-    static Text MakeText(string value, Transform parent, int size, Color color, Vector2 pos, Vector2 rectSize)
+    static TextMeshProUGUI MakeText(string value, Transform parent, int size, Color color, Vector2 pos, Vector2 rectSize)
     {
-        var r=MakeRect(value,parent,new Vector2(.5f,.5f),pos,rectSize); var t=r.gameObject.AddComponent<Text>();
-        t.font=Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf"); t.text=value; t.fontSize=size; t.color=color; t.alignment=TextAnchor.MiddleCenter; t.horizontalOverflow=HorizontalWrapMode.Wrap; t.verticalOverflow=VerticalWrapMode.Truncate; return t;
+        var r=MakeRect(value,parent,new Vector2(.5f,.5f),pos,rectSize); var t=r.gameObject.AddComponent<TextMeshProUGUI>();
+        t.font=TMP_Settings.defaultFontAsset; t.text=value; t.fontSize=size; t.color=color; t.alignment=TextAlignmentOptions.Center; t.textWrappingMode=TextWrappingModes.Normal; t.overflowMode=TextOverflowModes.Truncate; return t;
     }
     static Button MakeButton(string label, Transform parent, Vector2 pos, Vector2 size, Color color, UnityAction action)
     {

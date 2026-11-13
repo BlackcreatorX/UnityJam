@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class RRMinigameScreen : MonoBehaviour
 {
@@ -9,10 +10,10 @@ public class RRMinigameScreen : MonoBehaviour
     [SerializeField] private RRGameManager gameManager;
     [SerializeField] private RRouletteManager rouletteManager;
     [SerializeField] private RRClueManager clueManager;
-    [SerializeField] private Text statusText;
-    [SerializeField] private Text turnsText;
-    [SerializeField] private Text cluesText;
-    [SerializeField] private Text chamberText;
+    [SerializeField] private TextMeshProUGUI statusText;
+    [SerializeField] private TextMeshProUGUI turnsText;
+    [SerializeField] private TextMeshProUGUI cluesText;
+    [SerializeField] private TextMeshProUGUI chamberText;
     [SerializeField] private Button[] gameplayButtons;
     private bool ended;
 
