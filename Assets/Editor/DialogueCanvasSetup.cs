@@ -24,6 +24,9 @@ public static class DialogueCanvasSetup
         }
 
         EnsureEventSystem();
+        var defaultPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(DialogueCanvasDefaultPrefab.PrefabPath);
+        if (defaultPrefab != null && CreateFromDefaultPrefab(defaultPrefab))
+            return;
 
         var canvasObject = new GameObject("Dialogue Canvas", typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
         Undo.RegisterCreatedObjectUndo(canvasObject, "Create Dialogue Canvas");
@@ -100,6 +103,58 @@ public static class DialogueCanvasSetup
 
         Selection.activeGameObject = systemObject;
         EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+    }
+
+    private static bool CreateFromDefaultPrefab(GameObject prefab)
+    {
+        var canvasObject = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
+        if (canvasObject == null)
+            return false;
+
+        Undo.RegisterCreatedObjectUndo(canvasObject, "Create Default Dialogue Canvas");
+        var canvas = canvasObject.GetComponent<Canvas>();
+        var portraitTransform = canvasObject.transform.Find("Character Portrait");
+        var panelTransform = canvasObject.transform.Find("Dialogue Panel");
+        var speakerTransform = panelTransform != null ? panelTransform.Find("Speaker Name") : null;
+        var bodyTransform = panelTransform != null ? panelTransform.Find("Dialogue Text") : null;
+        var continueTransform = panelTransform != null ? panelTransform.Find("Continue Indicator") : null;
+        var portrait = portraitTransform != null ? portraitTransform.GetComponent<Image>() : null;
+        var speaker = speakerTransform != null ? speakerTransform.GetComponent<TextMeshProUGUI>() : null;
+        var body = bodyTransform != null ? bodyTransform.GetComponent<TextMeshProUGUI>() : null;
+        var continueText = continueTransform != null ? continueTransform.GetComponent<TextMeshProUGUI>() : null;
+
+        if (canvas == null || portrait == null || panelTransform == null || speaker == null || body == null || continueText == null)
+        {
+            Debug.LogError("The default Dialogue Canvas prefab is missing a required UI object.", canvasObject);
+            Undo.DestroyObjectImmediate(canvasObject);
+            return false;
+        }
+
+        canvas.sortingOrder = GetNextCanvasSortingOrder();
+        var spawnPointObject = new GameObject("Particle Spawn Point");
+        Undo.RegisterCreatedObjectUndo(spawnPointObject, "Create Particle Spawn Point");
+        spawnPointObject.transform.position = Vector3.zero;
+
+        var systemObject = new GameObject("Dialogue System");
+        Undo.RegisterCreatedObjectUndo(systemObject, "Create Dialogue System");
+        systemObject.SetActive(false);
+        var manager = systemObject.AddComponent<DialogueManager>();
+        var dialogueUI = systemObject.AddComponent<DialogueUI>();
+
+        var serializedUI = new SerializedObject(dialogueUI);
+        serializedUI.FindProperty("dialogueManager").objectReferenceValue = manager;
+        serializedUI.FindProperty("dialoguePanel").objectReferenceValue = panelTransform.gameObject;
+        serializedUI.FindProperty("speakerName").objectReferenceValue = speaker;
+        serializedUI.FindProperty("dialogueText").objectReferenceValue = body;
+        serializedUI.FindProperty("characterPortrait").objectReferenceValue = portrait;
+        serializedUI.FindProperty("particleSpawnPoint").objectReferenceValue = spawnPointObject.transform;
+        serializedUI.FindProperty("continueIndicator").objectReferenceValue = continueText.gameObject;
+        serializedUI.ApplyModifiedProperties();
+
+        systemObject.SetActive(true);
+        Selection.activeGameObject = systemObject;
+        EditorSceneManager.MarkSceneDirty(EditorSceneManager.GetActiveScene());
+        return true;
     }
 
     private static void EnsureEventSystem()

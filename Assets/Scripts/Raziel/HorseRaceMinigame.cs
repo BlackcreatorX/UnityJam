@@ -3,9 +3,20 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
+using DialogueSystem;
 
 public class HorseRaceMinigame : MonoBehaviour
 {
+    public enum RaceState
+    {
+        WaitingForDialogue,
+        Countdown,
+        Racing,
+        Victory,
+        Defeat
+    }
+
     [Header("Caballos (5, de arriba hacia abajo)")]
     public Horse[] horses = new Horse[5];
     public int playerHorseIndex = 0;
@@ -42,6 +53,10 @@ public class HorseRaceMinigame : MonoBehaviour
 
     [Header("Flujo")]
     public bool autoStart = true;
+    [SerializeField] private DialogueManager dialogueManager;
+    [SerializeField] private DialogueSequence victoryDialogue;
+    [SerializeField] private DialogueSequence defeatDialogue;
+    [SerializeField] private GameObject gameOverPanel;
 
     [Header("UI")]
     public TMP_Text messageText;
@@ -59,6 +74,12 @@ public class HorseRaceMinigame : MonoBehaviour
     bool raceOver = true;
     bool paused;
     int messageId;
+    bool minigameStarted;
+    bool resultDialogueActive;
+    bool pendingVictory;
+
+    public RaceState CurrentState { get; private set; } = RaceState.WaitingForDialogue;
+    public event System.Action<RaceState> RaceStateChanged;
 
     int[] horseNumbers;
     int luckyHorse;
@@ -75,6 +96,10 @@ public class HorseRaceMinigame : MonoBehaviour
     // dialogueManager.DialogueEnded += horseRace.StartMinigame;
     public void StartMinigame()
     {
+        if (minigameStarted)
+            return;
+
+        minigameStarted = true;
         StopAllCoroutines();
         StartCoroutine(RaceRoutine());
     }
@@ -82,21 +107,57 @@ public class HorseRaceMinigame : MonoBehaviour
     void OnEnable()
     {
         if (board) board.Resolved += OnShot;
+        if (dialogueManager != null) dialogueManager.DialogueEnded += HandleDialogueEnded;
     }
 
     void OnDisable()
     {
         if (board) board.Resolved -= OnShot;
+        if (dialogueManager != null) dialogueManager.DialogueEnded -= HandleDialogueEnded;
     }
 
     void Start()
     {
-        if (autoStart) StartMinigame();
+        if (gameOverPanel != null)
+            gameOverPanel.SetActive(false);
+
+        if (dialogueManager == null)
+        {
+            if (autoStart) StartMinigame();
+            else SetRaceState(RaceState.WaitingForDialogue);
+        }
+        else
+        {
+            SetRaceState(RaceState.WaitingForDialogue);
+        }
+    }
+
+    void HandleDialogueEnded()
+    {
+        if (resultDialogueActive)
+        {
+            resultDialogueActive = false;
+            FinishOutcome(pendingVictory);
+            return;
+        }
+
+        if (!minigameStarted)
+            StartMinigame();
+    }
+
+    void SetRaceState(RaceState state)
+    {
+        if (CurrentState == state)
+            return;
+
+        CurrentState = state;
+        RaceStateChanged?.Invoke(state);
     }
 
     IEnumerator RaceRoutine()
     {
         raceOver = false;
+        SetRaceState(RaceState.Countdown);
         paused = false;
         board.inputEnabled = false;
         board.paused = false;
@@ -113,12 +174,12 @@ public class HorseRaceMinigame : MonoBehaviour
         for (int i = 3; i > 0; i--)
             yield return Countdown(i.ToString(), countdownStep);
 
+        yield return Countdown("GO!", countdownStep + 0.2f);
+        if (countdownRoot) countdownRoot.SetActive(false);
         board.inputEnabled = true;
         for (int i = 0; i < horses.Length; i++)
             if (i != playerHorseIndex) StartCoroutine(AiRoutine(horses[i]));
-
-        yield return Countdown("GO!", countdownStep + 0.2f);
-        if (countdownRoot) countdownRoot.SetActive(false);
+        SetRaceState(RaceState.Racing);
     }
 
     IEnumerator Countdown(string text, float duration)
@@ -190,6 +251,7 @@ public class HorseRaceMinigame : MonoBehaviour
         while (winner.IsMoving) yield return null;
 
         bool playerWon = winner == Player;
+        SetRaceState(playerWon ? RaceState.Victory : RaceState.Defeat);
 
         if (playerWon)
         {
@@ -206,6 +268,40 @@ public class HorseRaceMinigame : MonoBehaviour
         }
 
         onRaceFinished?.Invoke(playerWon);
+        DialogueSequence resultDialogue = playerWon ? victoryDialogue : defeatDialogue;
+        if (dialogueManager != null && resultDialogue != null)
+        {
+            pendingVictory = playerWon;
+            resultDialogueActive = true;
+            dialogueManager.StartDialogue(resultDialogue);
+        }
+        else
+        {
+            FinishOutcome(playerWon);
+        }
+    }
+
+    void FinishOutcome(bool playerWon)
+    {
+        if (!playerWon)
+        {
+            if (gameOverPanel != null)
+                gameOverPanel.SetActive(true);
+            else
+                Debug.LogWarning("Assign the Game Over Panel in the HorseRaceMinigame Inspector.", this);
+            return;
+        }
+
+        int nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
+        if (nextSceneIndex < SceneManager.sceneCountInBuildSettings)
+            SceneManager.LoadScene(nextSceneIndex);
+        else
+            Debug.LogWarning("There is no scene after HorseRaceRaziel in Build Settings.", this);
+    }
+
+    public void RestartScene()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     void PrepareHint()

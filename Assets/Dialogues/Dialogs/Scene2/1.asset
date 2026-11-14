@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f235e9a96eb7bbb419458f22113d08f2, type: 3}
+  m_Name: 1
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueSystem.DialogueSequence
+  lines:
+  - text: "Ah, horse racing. A magnificent display of speed, instinct\u2026 and terrible
+      decisions."
+    speaker: {fileID: 11400000, guid: 6c73fbfa91484ca43a982420233c0fdd, type: 2}
+    spriteIndex: 1
+    particlePrefab: {fileID: 0}
+  - text: You see, darling, your steed's speed will depend on your aim. The more
+      accurate your shots, the faster it will gallop.
+    speaker: {fileID: 11400000, guid: 6c73fbfa91484ca43a982420233c0fdd, type: 2}
+    spriteIndex: 2
+    particlePrefab: {fileID: 0}
+  - text: Try not to waste them. It would be rather embarrassing if your thoroughbred
+      ended up trotting while mine prances toward the finish line."
+    speaker: {fileID: 11400000, guid: 6c73fbfa91484ca43a982420233c0fdd, type: 2}
+    spriteIndex: 1
+    particlePrefab: {fileID: 0}
+  - text: "And don't get your hopes up too high about the prize. There won't be any
+      victory concert here\u2026 though, who knows, perhaps your horse has more musical
+      talent than you do."
+    speaker: {fileID: 11400000, guid: 6c73fbfa91484ca43a982420233c0fdd, type: 2}
+    spriteIndex: 3
+    particlePrefab: {fileID: 0}
