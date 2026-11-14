@@ -4,7 +4,6 @@ using TMPro;
 using System.Collections;
 using System.Collections.Generic;
 
-[RequireComponent(typeof(AudioSource))]
 public class MinigameManager : MonoBehaviour
 {
     [Header("UI Instrucciones y Rondas")]
@@ -34,7 +33,6 @@ public class MinigameManager : MonoBehaviour
     public AudioClip sonidoVictoriaDefinitiva; 
     public AudioClip sonidoDerrotaDefinitiva;  
     public AudioClip sonidoEmpate;             
-    private AudioSource audioSource;
 
     [Header("Ajustes de Tiempos")]
     public float tiempoMemorizacion = 1.0f;  
@@ -58,7 +56,6 @@ public class MinigameManager : MonoBehaviour
 
     private void Start()
     {
-        audioSource = GetComponent<AudioSource>();
         if (actionButton != null) actionButtonText = actionButton.GetComponentInChildren<TextMeshProUGUI>();
         
         panelInstrucciones.SetActive(true);
@@ -145,19 +142,17 @@ public class MinigameManager : MonoBehaviour
 
     private void ReproducirSonidoGenerico(AudioClip clip)
     {
-        if (audioSource != null && clip != null)
+        if (clip != null) 
         {
-            audioSource.pitch = Random.Range(0.9f, 1.1f);
-            audioSource.PlayOneShot(clip);
+            AudioManager.Instance.PlaySFXRandomPitch(clip);
         }
     }
 
     private void ReproducirSonidoResultado(AudioClip clip)
     {
-        if (audioSource != null && clip != null)
+        if (clip != null) 
         {
-            audioSource.pitch = 1f; 
-            audioSource.PlayOneShot(clip);
+            AudioManager.Instance.PlaySFX(clip);
         }
     }
 

@@ -4,7 +4,6 @@ using TMPro;
 using UnityEngine.UI;
 using System.Collections;
 
-[RequireComponent(typeof(AudioSource))]
 public class RuletaPremios : MonoBehaviour
 {
     [Header("UI Instrucciones")]
@@ -27,13 +26,11 @@ public class RuletaPremios : MonoBehaviour
     [Header("Audio")]
     public AudioClip sonidoGiroTick; 
     public AudioClip sonidoPremio;
-    private AudioSource audioSource;
 
     private bool estaGirando = false;
 
     void Start()
     {
-        audioSource = GetComponent<AudioSource>();
         botonGirar.onClick.AddListener(IniciarGiro);
         
         // Estado inicial de espera
@@ -69,10 +66,16 @@ public class RuletaPremios : MonoBehaviour
 
     private void ReproducirSonido(AudioClip clip, bool variarTono)
     {
-        if (audioSource != null && clip != null)
+        if (clip != null)
         {
-            audioSource.pitch = variarTono ? Random.Range(0.9f, 1.1f) : 1f;
-            audioSource.PlayOneShot(clip);
+            if (variarTono) 
+            {
+                AudioManager.Instance.PlaySFXRandomPitch(clip);
+            }
+            else 
+            {
+                AudioManager.Instance.PlaySFX(clip);
+            }
         }
     }
 
@@ -144,6 +147,6 @@ public class RuletaPremios : MonoBehaviour
         indicePremio = indicePremio % premios.Length;
 
         string premioGanado = premios[indicePremio];
-        textoResultado.text = $"¡Felicidades!\nGanaste: <color=#FFD700>{premioGanado}</color>";
+        textoResultado.text = $"¡Felicidades! Ganaste: <color=#FFD700>{premioGanado}</color>";
     }
 }
