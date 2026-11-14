@@ -421,8 +421,8 @@ MonoBehaviour:
   label: {fileID: 1724968681}
   normalSprite: {fileID: 21300000, guid: 77d66bac2b8395944b2df7254693aa85, type: 3}
   selectedSprite: {fileID: 21300000, guid: c82bdb52fd102bb408c482175cbd5e56, type: 3}
-  normalText: {r: 0.92156863, g: 0.9019608, b: 0.92156863, a: 1}
-  selectedText: {r: 0.8627451, g: 0.74509805, b: 0.36862746, a: 1}
+  normalText: {r: 0.23137255, g: 0.101960786, b: 0.2, a: 1}
+  selectedText: {r: 1, g: 0.972549, b: 0.9411765, a: 1}
 --- !u!224 &329305400
 RectTransform:
   m_ObjectHideFlags: 0
@@ -536,8 +536,8 @@ MonoBehaviour:
   label: {fileID: 489755093}
   normalSprite: {fileID: 21300000, guid: 77d66bac2b8395944b2df7254693aa85, type: 3}
   selectedSprite: {fileID: 21300000, guid: c82bdb52fd102bb408c482175cbd5e56, type: 3}
-  normalText: {r: 0.92156863, g: 0.9019608, b: 0.92156863, a: 1}
-  selectedText: {r: 0.8627451, g: 0.74509805, b: 0.36862746, a: 1}
+  normalText: {r: 0.23137255, g: 0.101960786, b: 0.2, a: 1}
+  selectedText: {r: 1, g: 0.972549, b: 0.9411765, a: 1}
 --- !u!114 &367353040
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -610,7 +610,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -5}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 440, y: 92}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &419014717
@@ -626,7 +626,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
-  m_Color: {r: 0.92156863, g: 0.9019608, b: 0.92156863, a: 1}
+  m_Color: {r: 0.23137255, g: 0.101960786, b: 0.2, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -689,7 +689,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -5}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 440, y: 92}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &489755092
@@ -713,7 +713,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
-  m_Color: {r: 0.92156863, g: 0.9019608, b: 0.92156863, a: 1}
+  m_Color: {r: 0.23137255, g: 0.101960786, b: 0.2, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1102,7 +1102,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
-  m_Color: {r: 0.92156863, g: 0.9019608, b: 0.92156863, a: 1}
+  m_Color: {r: 0.23137255, g: 0.101960786, b: 0.2, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1147,7 +1147,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -5}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 400, y: 92}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1026072665
@@ -1185,8 +1185,8 @@ MonoBehaviour:
   label: {fileID: 984588348}
   normalSprite: {fileID: 21300000, guid: 77d66bac2b8395944b2df7254693aa85, type: 3}
   selectedSprite: {fileID: 21300000, guid: c82bdb52fd102bb408c482175cbd5e56, type: 3}
-  normalText: {r: 0.92156863, g: 0.9019608, b: 0.92156863, a: 1}
-  selectedText: {r: 0.8627451, g: 0.74509805, b: 0.36862746, a: 1}
+  normalText: {r: 0.23137255, g: 0.101960786, b: 0.2, a: 1}
+  selectedText: {r: 1, g: 0.972549, b: 0.9411765, a: 1}
 --- !u!224 &1026072667
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1429,7 +1429,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -5}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 440, y: 92}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1099702888
@@ -1453,7 +1453,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
-  m_Color: {r: 0.92156863, g: 0.9019608, b: 0.92156863, a: 1}
+  m_Color: {r: 0.23137255, g: 0.101960786, b: 0.2, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1509,8 +1509,8 @@ MonoBehaviour:
   label: {fileID: 1559150267}
   normalSprite: {fileID: 21300000, guid: 77d66bac2b8395944b2df7254693aa85, type: 3}
   selectedSprite: {fileID: 21300000, guid: c82bdb52fd102bb408c482175cbd5e56, type: 3}
-  normalText: {r: 0.92156863, g: 0.9019608, b: 0.92156863, a: 1}
-  selectedText: {r: 0.8627451, g: 0.74509805, b: 0.36862746, a: 1}
+  normalText: {r: 0.23137255, g: 0.101960786, b: 0.2, a: 1}
+  selectedText: {r: 1, g: 0.972549, b: 0.9411765, a: 1}
 --- !u!224 &1228018030
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1824,7 +1824,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
-  m_Color: {r: 0.92156863, g: 0.9019608, b: 0.92156863, a: 1}
+  m_Color: {r: 0.23137255, g: 0.101960786, b: 0.2, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1869,7 +1869,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -5}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 400, y: 92}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1606153974
@@ -2207,7 +2207,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Text
   m_Material: {fileID: 0}
-  m_Color: {r: 0.92156863, g: 0.9019608, b: 0.92156863, a: 1}
+  m_Color: {r: 0.23137255, g: 0.101960786, b: 0.2, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2252,7 +2252,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -5}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 400, y: 92}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1819293381
@@ -2450,8 +2450,8 @@ MonoBehaviour:
   label: {fileID: 1099702889}
   normalSprite: {fileID: 21300000, guid: 77d66bac2b8395944b2df7254693aa85, type: 3}
   selectedSprite: {fileID: 21300000, guid: c82bdb52fd102bb408c482175cbd5e56, type: 3}
-  normalText: {r: 0.92156863, g: 0.9019608, b: 0.92156863, a: 1}
-  selectedText: {r: 0.8627451, g: 0.74509805, b: 0.36862746, a: 1}
+  normalText: {r: 0.23137255, g: 0.101960786, b: 0.2, a: 1}
+  selectedText: {r: 1, g: 0.972549, b: 0.9411765, a: 1}
 --- !u!114 &1962743526
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2545,8 +2545,8 @@ MonoBehaviour:
   label: {fileID: 419014717}
   normalSprite: {fileID: 21300000, guid: 77d66bac2b8395944b2df7254693aa85, type: 3}
   selectedSprite: {fileID: 21300000, guid: c82bdb52fd102bb408c482175cbd5e56, type: 3}
-  normalText: {r: 0.92156863, g: 0.9019608, b: 0.92156863, a: 1}
-  selectedText: {r: 0.8627451, g: 0.74509805, b: 0.36862746, a: 1}
+  normalText: {r: 0.23137255, g: 0.101960786, b: 0.2, a: 1}
+  selectedText: {r: 1, g: 0.972549, b: 0.9411765, a: 1}
 --- !u!114 &1971576345
 MonoBehaviour:
   m_ObjectHideFlags: 0

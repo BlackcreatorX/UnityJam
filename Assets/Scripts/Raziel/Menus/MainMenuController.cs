@@ -8,6 +8,7 @@ public class MainMenuController : MonoBehaviour
     public MenuList list;
     public RectTransform wheel;
     public float degreesPerOption = 54f;
+    public float[] optionAngles = { 0f, 54f, 126f, 180f };
     public float wheelSmooth = 0.25f;
     public Image villain;
     public float villainScale = 0.82f;
@@ -53,7 +54,7 @@ public class MainMenuController : MonoBehaviour
 
     void OnSelectionChanged(int index)
     {
-        wheelTarget = -index * degreesPerOption;
+        wheelTarget = optionAngles != null && index < optionAngles.Length ? -optionAngles[index] : -index * degreesPerOption;
         SetVillain(index == list.buttons.Length - 1 ? villainQuit : villainIdle);
     }
 
