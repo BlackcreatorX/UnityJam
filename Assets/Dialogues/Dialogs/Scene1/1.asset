@@ -67,3 +67,16 @@ MonoBehaviour:
     speaker: {fileID: 11400000, guid: 6c73fbfa91484ca43a982420233c0fdd, type: 2}
     spriteIndex: 1
     particlePrefab: {fileID: 0}
+  - text: Let's start with something simple.
+    speaker: {fileID: 11400000, guid: 6c73fbfa91484ca43a982420233c0fdd, type: 2}
+    spriteIndex: 5
+    particlePrefab: {fileID: 0}
+  - text: Fortune is a fickle mistress. Though, for some reason, she always seems
+      to find her way back to me.
+    speaker: {fileID: 11400000, guid: 6c73fbfa91484ca43a982420233c0fdd, type: 2}
+    spriteIndex: 2
+    particlePrefab: {fileID: 0}
+  - text: Give the wheel a spin, dear. Let's see if luck is on your side today."
+    speaker: {fileID: 11400000, guid: 6c73fbfa91484ca43a982420233c0fdd, type: 2}
+    spriteIndex: 3
+    particlePrefab: {fileID: 0}
