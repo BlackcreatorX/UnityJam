@@ -2858,7 +2858,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1243318094
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4334,7 +4334,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "Guess the manager\x27s number. The enemy\x27s roulette is random."
+  m_text: Guess the manager's number. The enemy's roulette is random.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e524087a28830ee42a4b59111b40bdea, type: 2}
   m_sharedMaterial: {fileID: -3490047092283990496, guid: e524087a28830ee42a4b59111b40bdea, type: 2}

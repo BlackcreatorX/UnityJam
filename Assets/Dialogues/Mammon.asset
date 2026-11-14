@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dff51a029ba0b1a49a5192366f105b0f, type: 3}
+  m_Name: Mammon
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueSystem.SpeakerData
+  speakerName: Lady Mammon
+  expressions:
+  - {fileID: -2418999403076102457, guid: 04942c0d338276c478eb1993f6f60053, type: 3}
+  - {fileID: -8909365622510048912, guid: 04942c0d338276c478eb1993f6f60053, type: 3}
+  - {fileID: -5098213670242626864, guid: 04942c0d338276c478eb1993f6f60053, type: 3}
+  - {fileID: 5095611371513067457, guid: 04942c0d338276c478eb1993f6f60053, type: 3}
+  - {fileID: 4120438370903620834, guid: 04942c0d338276c478eb1993f6f60053, type: 3}
+  - {fileID: -5344303109638985092, guid: 04942c0d338276c478eb1993f6f60053, type: 3}
+  - {fileID: 8165091670963731796, guid: 04942c0d338276c478eb1993f6f60053, type: 3}
+  - {fileID: 1684362425348814748, guid: 04942c0d338276c478eb1993f6f60053, type: 3}

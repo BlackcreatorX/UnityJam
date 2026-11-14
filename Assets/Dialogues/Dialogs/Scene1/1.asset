@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f235e9a96eb7bbb419458f22113d08f2, type: 3}
+  m_Name: 1
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueSystem.DialogueSequence
+  lines:
+  - text: "Oh\u2026 you're awake already?"
+    speaker: {fileID: 11400000, guid: 6c73fbfa91484ca43a982420233c0fdd, type: 2}
+    spriteIndex: 2
+    particlePrefab: {fileID: 0}
+  - text: I must confess, I expected a little more theatrics. After all, it is not
+      every day a soul is granted the privilege of appearing before me.
+    speaker: {fileID: 11400000, guid: 6c73fbfa91484ca43a982420233c0fdd, type: 2}
+    spriteIndex: 3
+    particlePrefab: {fileID: 0}
+  - text: "I am Mammon. Lady of Greed, sovereign of countless riches\u2026 and, naturally,
+      an exceptional player."
+    speaker: {fileID: 11400000, guid: 6c73fbfa91484ca43a982420233c0fdd, type: 2}
+    spriteIndex: 2
+    particlePrefab: {fileID: 0}
+  - text: Though, to tell the truth, the word exceptional feels rather modest when
+      referring to me.
+    speaker: {fileID: 11400000, guid: 6c73fbfa91484ca43a982420233c0fdd, type: 2}
+    spriteIndex: 5
+    particlePrefab: {fileID: 0}
+  - text: "And you\u2026 are a little soul with an extraordinary opportunity."
+    speaker: {fileID: 11400000, guid: 6c73fbfa91484ca43a982420233c0fdd, type: 2}
+    spriteIndex: 1
+    particlePrefab: {fileID: 0}
+  - text: You see, I find myself rather bored.
+    speaker: {fileID: 11400000, guid: 6c73fbfa91484ca43a982420233c0fdd, type: 2}
+    spriteIndex: 1
+    particlePrefab: {fileID: 0}
+  - text: Eternity may be delightful, but it grows dull when one always obtains whatever
+      one desires.
+    speaker: {fileID: 11400000, guid: 6c73fbfa91484ca43a982420233c0fdd, type: 2}
+    spriteIndex: 0
+    particlePrefab: {fileID: 0}
+  - text: Fortunately, you came along.
+    speaker: {fileID: 11400000, guid: 6c73fbfa91484ca43a982420233c0fdd, type: 2}
+    spriteIndex: 5
+    particlePrefab: {fileID: 0}
+  - text: I offer you a bargain. Five games. Five opportunities to prove your insignificant
+      existence is worth something.
+    speaker: {fileID: 11400000, guid: 6c73fbfa91484ca43a982420233c0fdd, type: 2}
+    spriteIndex: 3
+    particlePrefab: {fileID: 0}
+  - text: If you manage to defeat me, I will grant you your freedom.
+    speaker: {fileID: 11400000, guid: 6c73fbfa91484ca43a982420233c0fdd, type: 2}
+    spriteIndex: 2
+    particlePrefab: {fileID: 0}
+  - text: "But if you lose\u2026"
+    speaker: {fileID: 11400000, guid: 6c73fbfa91484ca43a982420233c0fdd, type: 2}
+    spriteIndex: 5
+    particlePrefab: {fileID: 0}
+  - text: your soul will be mine. And believe me, I have far more interesting plans
+      for it than letting it wander around.
+    speaker: {fileID: 11400000, guid: 6c73fbfa91484ca43a982420233c0fdd, type: 2}
+    spriteIndex: 1
+    particlePrefab: {fileID: 0}
