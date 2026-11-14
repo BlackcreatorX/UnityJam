@@ -28,7 +28,7 @@ Transform:
   m_GameObject: {fileID: 9123463937456026879}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 980.566, y: 504.6699, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -48,6 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AudioManager
   musicSource: {fileID: 8344733661189347307}
   sfxSource: {fileID: 4459977294451803704}
+  backgroundMusic: {fileID: 8300000, guid: 6127117f0814d2f48b579047817d278a, type: 3}
 --- !u!82 &8344733661189347307
 AudioSource:
   m_ObjectHideFlags: 0
@@ -60,7 +61,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 1

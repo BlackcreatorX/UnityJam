@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f235e9a96eb7bbb419458f22113d08f2, type: 3}
+  m_Name: Win
+  m_EditorClassIdentifier: Assembly-CSharp::DialogueSystem.DialogueSequence
+  lines:
+  - text: What?
+    speaker: {fileID: 11400000, guid: 6c73fbfa91484ca43a982420233c0fdd, type: 2}
+    spriteIndex: 7
+    particlePrefab: {fileID: 0}
+  - text: "No\u2026 No, no, no\u2026ALL FOUR?! YOU GOT ALL FOUR RIGHT?!"
+    speaker: {fileID: 11400000, guid: 6c73fbfa91484ca43a982420233c0fdd, type: 2}
+    spriteIndex: 6
+    particlePrefab: {fileID: 0}
+  - text: This is ridiculous! Absolutely ridiculous!
+    speaker: {fileID: 11400000, guid: 6c73fbfa91484ca43a982420233c0fdd, type: 2}
+    spriteIndex: 7
+    particlePrefab: {fileID: 0}
+  - text: I am Mammon! The Sovereign of Greed! The owner of countless treasures!
+      And I'm going to lose my bet to an insignificant mortal soul?!
+    speaker: {fileID: 11400000, guid: 6c73fbfa91484ca43a982420233c0fdd, type: 2}
+    spriteIndex: 6
+    particlePrefab: {fileID: 0}
+  - text: "Well, if your soul is yours and I can't have it\u2026 Get out!"
+    speaker: {fileID: 11400000, guid: 6c73fbfa91484ca43a982420233c0fdd, type: 2}
+    spriteIndex: 4
+    particlePrefab: {fileID: 0}
+  - text: "\u2026Tch.\r\nWhat an irritatingly lucky soul."
+    speaker: {fileID: 11400000, guid: 6c73fbfa91484ca43a982420233c0fdd, type: 2}
+    spriteIndex: 0
+    particlePrefab: {fileID: 0}

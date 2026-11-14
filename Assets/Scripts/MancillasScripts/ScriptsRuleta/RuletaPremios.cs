@@ -75,6 +75,7 @@ public class RuletaPremios : MonoBehaviour
         if (botonIniciar != null) botonIniciar.SetActive(false);
         botonGirar.gameObject.SetActive(false);
         textoResultado.text = "";
+        LuckyNumberProgress.RecordRoulette(numeroDeLaSuerte);
         puntuacion = 0;
         rachaSuerte = 0;
         tirosRealizados = 0;
@@ -124,6 +125,7 @@ public class RuletaPremios : MonoBehaviour
     public void EstablecerNumeroDeLaSuerte(int numero)
     {
         numeroDeLaSuerte = numero;
+        LuckyNumberProgress.RecordRoulette(numeroDeLaSuerte);
         Debug.Log($"[{gameObject.name}] Número de la suerte establecido en: {numeroDeLaSuerte}");
     }
 

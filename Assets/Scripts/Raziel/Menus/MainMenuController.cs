@@ -19,7 +19,7 @@ public class MainMenuController : MonoBehaviour
     public GameObject credits;
     public MenuList creditsList;
     public Image fade;
-    public string gameScene = "PauseTest";
+    public string gameScene = "RuletaGame";
 
     float wheelAngle;
     float wheelTarget;

@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using DialogueSystem;
+using UnityEngine.SceneManagement;
 
 public class RRMinigameScreen : MonoBehaviour
 {
@@ -10,12 +12,37 @@ public class RRMinigameScreen : MonoBehaviour
     [SerializeField] private RRGameManager gameManager;
     [SerializeField] private RRouletteManager rouletteManager;
     [SerializeField] private RRClueManager clueManager;
+    [SerializeField] private DialogueManager dialogueManager;
+    [SerializeField] private DialogueSequence victoryDialogue;
+    [SerializeField] private DialogueSequence defeatDialogue;
+    [SerializeField] private GameObject gameplayRoot;
     [SerializeField] private TextMeshProUGUI statusText;
     [SerializeField] private TextMeshProUGUI turnsText;
     [SerializeField] private TextMeshProUGUI cluesText;
     [SerializeField] private TextMeshProUGUI chamberText;
     [SerializeField] private Button[] gameplayButtons;
     private bool ended;
+    private bool openingDialogueEnded;
+    private bool pendingStart;
+    private bool gameStarted;
+    private bool resultDialogueActive;
+    private bool pendingVictory;
+
+    private void OnEnable()
+    {
+        if (dialogueManager != null)
+            dialogueManager.DialogueEnded += HandleDialogueEnded;
+        if (gameManager != null)
+            gameManager.OnGameStateChanged.AddListener(HandleGameStateChanged);
+    }
+
+    private void OnDisable()
+    {
+        if (dialogueManager != null)
+            dialogueManager.DialogueEnded -= HandleDialogueEnded;
+        if (gameManager != null)
+            gameManager.OnGameStateChanged.RemoveListener(HandleGameStateChanged);
+    }
 
     private void Start()
     {
@@ -24,9 +51,34 @@ public class RRMinigameScreen : MonoBehaviour
             Debug.LogError("Minigame scene UI has not been generated yet. Run Tools > Minigame > Create Saved Canvas in the Unity Editor.");
             return;
         }
+        if (gameplayRoot != null) gameplayRoot.SetActive(false);
         if (usePlaceholderNumber) StartWithNumber(placeholderNumber);
         else statusText.text = "Waiting for the external manager to provide a number…";
-        Refresh();
+        StartCoroutine(CheckOpeningDialogue());
+    }
+
+    private System.Collections.IEnumerator CheckOpeningDialogue()
+    {
+        // DialogueManager starts its initial sequence in Start; wait until all Start methods have run.
+        yield return null;
+        if (dialogueManager == null || !dialogueManager.IsDialogueActive)
+        {
+            openingDialogueEnded = true;
+            TryStartGame();
+        }
+    }
+
+    private void HandleDialogueEnded()
+    {
+        if (resultDialogueActive)
+        {
+            resultDialogueActive = false;
+            FinishOutcome(pendingVictory);
+            return;
+        }
+
+        openingDialogueEnded = true;
+        TryStartGame();
     }
 
     public bool StartWithExternalNumber(int number) => StartWithNumber(number);
@@ -34,9 +86,93 @@ public class RRMinigameScreen : MonoBehaviour
     private bool StartWithNumber(int number)
     {
         if (numberManager == null || gameManager == null || !numberManager.SetLuckyNumber(number)) return false;
+        LuckyNumberProgress.RecordCharlie(number);
+        pendingStart = true;
+        TryStartGame();
+        return true;
+    }
+
+    private void TryStartGame()
+    {
+        if (!openingDialogueEnded || !pendingStart || gameStarted) return;
+
+        gameStarted = true;
+        if (gameplayRoot != null) gameplayRoot.SetActive(true);
         gameManager.StartGame();
         Refresh();
-        return true;
+    }
+
+    private void HandleGameStateChanged(RRGameManager.GameState state)
+    {
+        if (state != RRGameManager.GameState.Victory && state != RRGameManager.GameState.Defeat)
+            return;
+
+        ended = true;
+        if (gameplayButtons != null)
+            foreach (var button in gameplayButtons)
+                if (button != null) button.interactable = false;
+
+        pendingVictory = state == RRGameManager.GameState.Victory;
+        DialogueSequence sequence = pendingVictory ? victoryDialogue : defeatDialogue;
+        if (dialogueManager != null && sequence != null)
+        {
+            resultDialogueActive = true;
+            dialogueManager.StartDialogue(sequence);
+        }
+        else
+        {
+            FinishOutcome(pendingVictory);
+        }
+    }
+
+    private void FinishOutcome(bool victory)
+    {
+        if (victory)
+        {
+            int nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
+            if (nextSceneIndex >= 0 && nextSceneIndex < SceneManager.sceneCountInBuildSettings)
+                SceneManager.LoadScene(nextSceneIndex);
+            else
+                SceneManager.LoadScene("MainMenu");
+            return;
+        }
+
+        ShowGameOver();
+    }
+
+    private void ShowGameOver()
+    {
+        GameObject canvasObject = new GameObject("GameOverCanvas", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+        Canvas canvas = canvasObject.GetComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 1000;
+        canvasObject.GetComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+
+        GameObject panel = new GameObject("GameOverPanel", typeof(RectTransform), typeof(Image));
+        panel.transform.SetParent(canvasObject.transform, false);
+        RectTransform panelRect = panel.GetComponent<RectTransform>();
+        panelRect.anchorMin = Vector2.zero;
+        panelRect.anchorMax = Vector2.one;
+        panelRect.offsetMin = Vector2.zero;
+        panelRect.offsetMax = Vector2.zero;
+        panel.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.92f);
+
+        GameObject labelObject = new GameObject("GameOverText", typeof(RectTransform), typeof(TextMeshProUGUI));
+        labelObject.transform.SetParent(panel.transform, false);
+        RectTransform labelRect = labelObject.GetComponent<RectTransform>();
+        labelRect.anchorMin = new Vector2(0.1f, 0.25f);
+        labelRect.anchorMax = new Vector2(0.9f, 0.75f);
+        labelRect.offsetMin = Vector2.zero;
+        labelRect.offsetMax = Vector2.zero;
+        TextMeshProUGUI label = labelObject.GetComponent<TextMeshProUGUI>();
+        label.font = statusText.font;
+        label.text = "GAME OVER\n\nThe roulette fired. Mammon wins.";
+        label.alignment = TextAlignmentOptions.Center;
+        label.fontSize = 56f;
+        label.color = Color.white;
+        label.enableAutoSizing = true;
+        label.fontSizeMin = 28f;
+        label.fontSizeMax = 56f;
     }
 
     public void Guess1() => Guess(1);

@@ -8,6 +8,19 @@ public class AudioManager : MonoBehaviour
     [Header("Fuentes de Audio (Audio Sources)")]
     public AudioSource musicSource;
     public AudioSource sfxSource;
+    [SerializeField] private AudioClip backgroundMusic;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+    private static void CrearAudioManagerSiHaceFalta()
+    {
+        if (Instance != null) return;
+
+        GameObject prefab = Resources.Load<GameObject>("AudioManager");
+        if (prefab != null)
+            Instantiate(prefab);
+        else
+            Debug.LogError("AudioManager prefab is missing from a Resources folder.");
+    }
 
     private void Awake()
     {
@@ -23,6 +36,7 @@ public class AudioManager : MonoBehaviour
         }
 
         CargarVolumenes();
+        PlayMusic(backgroundMusic);
     }
 
     public void PlayMusic(AudioClip clip)

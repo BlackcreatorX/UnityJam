@@ -1625,7 +1625,7 @@ MonoBehaviour:
   credits: {fileID: 722502467}
   creditsList: {fileID: 722502468}
   fade: {fileID: 1644294849}
-  gameScene: Charlie scene
+  gameScene: RuletaGame
 --- !u!114 &552324135
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4281,7 +4281,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: LUCKY NUMBER
+  m_Text: ONE IN SIX
 --- !u!222 &1413186554
 CanvasRenderer:
   m_ObjectHideFlags: 0

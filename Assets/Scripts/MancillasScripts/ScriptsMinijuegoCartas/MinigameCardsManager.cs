@@ -3,6 +3,9 @@ using UnityEngine.InputSystem;
 using TMPro;
 using System.Collections;
 using System.Collections.Generic;
+using DialogueSystem;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class MinigameManager : MonoBehaviour
 {
@@ -28,6 +31,9 @@ public class MinigameManager : MonoBehaviour
 
     [Header("UI Resultado")]
     public TextMeshProUGUI resultText;
+    [SerializeField] private DialogueManager dialogueManager;
+    [SerializeField] private DialogueSequence victoryDialogue;
+    [SerializeField] private DialogueSequence defeatDialogue;
 
     [Header("Audio")]
     public AudioClip sonidoMovimientoCarta;
@@ -51,36 +57,78 @@ public class MinigameManager : MonoBehaviour
     private int victoriasJugador = 0;
     private int victoriasEnemigo = 0;
     private const int VICTORIAS_PARA_GANAR = 3;
+    private bool tutorialDesbloqueado;
+    private bool secuenciaResultadoActiva;
+    private bool partidaGanada;
 
     private List<Card> activeCards = new List<Card>();
     private List<Card> cartasEnMesa = new List<Card>(); 
     private Card playerCard;
     private Card enemyCard;
 
+    private void OnEnable()
+    {
+        if (dialogueManager != null)
+            dialogueManager.DialogueEnded += HandleDialogueEnded;
+    }
+
+    private void OnDisable()
+    {
+        if (dialogueManager != null)
+            dialogueManager.DialogueEnded -= HandleDialogueEnded;
+    }
+
     private void Start()
     {
+        LuckyNumberProgress.RecordCards(numeroDeLaSuerte);
         if (actionButton != null) actionButtonText = actionButton.GetComponentInChildren<TextMeshProUGUI>();
         
-        panelInstrucciones.SetActive(true);
+        if (panelInstrucciones != null) panelInstrucciones.SetActive(false);
         if (botonIniciar != null) botonIniciar.SetActive(false);
         if (actionButton != null) actionButton.SetActive(false);
-        resultText.text = "";
+        if (resultText != null) resultText.text = "";
+
+        if (dialogueManager == null)
+            PrepararInicioJuego();
+        else
+            StartCoroutine(ComprobarDialogoInicial());
+    }
+
+    private IEnumerator ComprobarDialogoInicial()
+    {
+        // DialogueManager starts its initial sequence in Start; check after all Start methods ran.
+        yield return null;
+        if (!dialogueManager.IsDialogueActive && !tutorialDesbloqueado && !secuenciaResultadoActiva)
+            PrepararInicioJuego();
+    }
+
+    private void HandleDialogueEnded()
+    {
+        if (secuenciaResultadoActiva)
+        {
+            secuenciaResultadoActiva = false;
+            if (partidaGanada)
+                CargarSiguienteEscena();
+            else
+                MostrarGameOver();
+            return;
+        }
+
+        PrepararInicioJuego();
+    }
+
+    private void PrepararInicioJuego()
+    {
+        if (tutorialDesbloqueado || estadoActual != EstadoJuego.PausaInicial) return;
+
+        tutorialDesbloqueado = true;
+        if (panelInstrucciones != null) panelInstrucciones.SetActive(false);
+        if (botonIniciar != null) botonIniciar.SetActive(false);
+        ReiniciarJuegoCompleto();
     }
 
     private void Update()
     {
-        if (estadoActual == EstadoJuego.PausaInicial)
-        {
-            bool clickMouse = Pointer.current != null && Pointer.current.press.wasPressedThisFrame;
-            bool teclaE = Keyboard.current != null && Keyboard.current.eKey.wasPressedThisFrame;
-
-            if (clickMouse || teclaE)
-            {
-                EmpezarJuego();
-            }
-            return;
-        }
-
         if (Pointer.current != null && Pointer.current.press.wasPressedThisFrame && estadoActual == EstadoJuego.EsperandoSeleccion)
         {
             Vector2 pointerScreenPos = Pointer.current.position.ReadValue();
@@ -99,14 +147,17 @@ public class MinigameManager : MonoBehaviour
     public void EstablecerNumeroDeLaSuerte(int numero)
     {
         numeroDeLaSuerte = numero;
+        LuckyNumberProgress.RecordCards(numeroDeLaSuerte);
         Debug.Log($"[{gameObject.name}] Número de la suerte establecido en: {numeroDeLaSuerte}");
     }
 
     public void EmpezarJuego()
     {
-        if (estadoActual == EstadoJuego.PausaInicial)
+        // Kept for existing UI button hookups; the game now starts as soon as the opening dialogue ends.
+        if (estadoActual == EstadoJuego.PausaInicial && tutorialDesbloqueado)
         {
-            panelInstrucciones.SetActive(false);
+            if (panelInstrucciones != null) panelInstrucciones.SetActive(false);
+            if (botonIniciar != null) botonIniciar.SetActive(false);
             ReiniciarJuegoCompleto();
         }
     }
@@ -147,23 +198,21 @@ public class MinigameManager : MonoBehaviour
 
     private void ActualizarTextoMarcador()
     {
-        if (scoreText != null) scoreText.text = $"Jugador: {victoriasJugador}  |  Mammon: {victoriasEnemigo}";
+        if (scoreText != null) scoreText.text = $"Player: {victoriasJugador}  |  Mammon: {victoriasEnemigo}";
     }
 
     private void ReproducirSonidoGenerico(AudioClip clip)
     {
-        if (clip != null) 
-        {
-            AudioManager.Instance.PlaySFXRandomPitch(clip);
-        }
+        if (clip == null || AudioManager.Instance == null) return;
+
+        AudioManager.Instance.PlaySFXRandomPitch(clip);
     }
 
     private void ReproducirSonidoResultado(AudioClip clip)
     {
-        if (clip != null) 
-        {
-            AudioManager.Instance.PlaySFX(clip);
-        }
+        if (clip == null || AudioManager.Instance == null) return;
+
+        AudioManager.Instance.PlaySFX(clip);
     }
 
     private IEnumerator GameRoutine()
@@ -237,19 +286,19 @@ public class MinigameManager : MonoBehaviour
 
         if (ganaRonda)
         {
-            resultText.text = "¡VICTORIA EN LA RONDA!";
+            resultText.text = "ROUND WON!";
             resultText.color = Color.green;
             victoriasJugador++;
         }
         else if (pierdeRonda)
         {
-            resultText.text = "¡DERROTA EN LA RONDA!";
+            resultText.text = "ROUND LOST!";
             resultText.color = Color.red;
             victoriasEnemigo++;
         }
         else 
         {
-            resultText.text = "¡EMPATE!";
+            resultText.text = "TIE!";
             resultText.color = Color.yellow;
         }
 
@@ -257,27 +306,94 @@ public class MinigameManager : MonoBehaviour
 
         if (victoriasJugador >= VICTORIAS_PARA_GANAR)
         {
-            resultText.text += "\n\n<color=#00FF00>¡GANASTE LA PARTIDA!</color>";
+            resultText.text += "\n\n<color=#00FF00>YOU WON THE GAME!</color>";
             estadoActual = EstadoJuego.FinDePartida;
-            actionButtonText.text = "Reiniciar Juego";
             ReproducirSonidoResultado(sonidoVictoriaDefinitiva); 
+            IniciarSecuenciaResultado(true);
         }
         else if (victoriasEnemigo >= VICTORIAS_PARA_GANAR)
         {
-            resultText.text += "\n\n<color=#FF0000>¡MAMMON GANA LA PARTIDA!</color>";
+            resultText.text += "\n\n<color=#FF0000>MAMMON WON THE GAME!</color>";
             estadoActual = EstadoJuego.FinDePartida;
-            actionButtonText.text = "Reiniciar Juego";
             ReproducirSonidoResultado(sonidoDerrotaDefinitiva); 
+            IniciarSecuenciaResultado(false);
         }
         else
         {
             estadoActual = EstadoJuego.EsperandoSiguienteRonda;
-            actionButtonText.text = "Siguiente Ronda";
+            if (actionButtonText != null) actionButtonText.text = "Next Round";
             if (ganaRonda) ReproducirSonidoResultado(sonidoVictoriaRonda);
             else if (pierdeRonda) ReproducirSonidoResultado(sonidoDerrotaRonda);
             else ReproducirSonidoResultado(sonidoEmpate);
         }
 
-        actionButton.SetActive(true); 
+        if (estadoActual != EstadoJuego.FinDePartida && actionButton != null)
+            actionButton.SetActive(true);
+    }
+
+    private void IniciarSecuenciaResultado(bool gano)
+    {
+        partidaGanada = gano;
+        if (actionButton != null) actionButton.SetActive(false);
+
+        DialogueSequence sequence = gano ? victoryDialogue : defeatDialogue;
+        if (dialogueManager != null && sequence != null)
+        {
+            secuenciaResultadoActiva = true;
+            dialogueManager.StartDialogue(sequence);
+            return;
+        }
+
+        Debug.LogWarning("Assign the victory and defeat dialogue sequences to MinigameManager.", this);
+        if (gano) CargarSiguienteEscena();
+        else MostrarGameOver();
+    }
+
+    private void MostrarGameOver()
+    {
+        estadoActual = EstadoJuego.FinDePartida;
+        string score = $"Player: {victoriasJugador}  |  Mammon: {victoriasEnemigo}";
+
+        GameObject canvasObject = new GameObject("GameOverCanvas", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+        Canvas canvas = canvasObject.GetComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 1000;
+        CanvasScaler scaler = canvasObject.GetComponent<CanvasScaler>();
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+
+        GameObject panel = new GameObject("GameOverPanel", typeof(RectTransform), typeof(Image));
+        panel.transform.SetParent(canvasObject.transform, false);
+        RectTransform panelRect = panel.GetComponent<RectTransform>();
+        panelRect.anchorMin = Vector2.zero;
+        panelRect.anchorMax = Vector2.one;
+        panelRect.offsetMin = Vector2.zero;
+        panelRect.offsetMax = Vector2.zero;
+        panel.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.92f);
+
+        GameObject labelObject = new GameObject("GameOverText", typeof(RectTransform), typeof(TextMeshProUGUI));
+        labelObject.transform.SetParent(panel.transform, false);
+        RectTransform labelRect = labelObject.GetComponent<RectTransform>();
+        labelRect.anchorMin = new Vector2(0.1f, 0.25f);
+        labelRect.anchorMax = new Vector2(0.9f, 0.75f);
+        labelRect.offsetMin = Vector2.zero;
+        labelRect.offsetMax = Vector2.zero;
+        TextMeshProUGUI label = labelObject.GetComponent<TextMeshProUGUI>();
+        if (resultText != null) label.font = resultText.font;
+        label.text = $"GAME OVER\n\nMammon won the card game.\n{score}";
+        label.alignment = TextAlignmentOptions.Center;
+        label.fontSize = 56f;
+        label.color = Color.white;
+        label.enableAutoSizing = true;
+        label.fontSizeMin = 28f;
+        label.fontSizeMax = 56f;
+    }
+
+    private void CargarSiguienteEscena()
+    {
+        int nextSceneIndex = SceneManager.GetActiveScene().buildIndex + 1;
+        if (nextSceneIndex < SceneManager.sceneCountInBuildSettings)
+            SceneManager.LoadScene(nextSceneIndex);
+        else
+            SceneManager.LoadScene("MainMenu");
     }
 }
