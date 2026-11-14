@@ -6,6 +6,9 @@ using System.Collections.Generic;
 
 public class MinigameManager : MonoBehaviour
 {
+    [Header("Número de la Suerte (Sistema Externo)")]
+    public int numeroDeLaSuerte = 0;
+    
     [Header("UI Instrucciones y Rondas")]
     public GameObject panelInstrucciones;
     public GameObject botonIniciar;
@@ -90,6 +93,13 @@ public class MinigameManager : MonoBehaviour
                 if (clickedCard != null && activeCards.Contains(clickedCard)) clickedCard.Select();
             }
         }
+    }
+
+    // Función pública para pasar el dato del número de la suerte
+    public void EstablecerNumeroDeLaSuerte(int numero)
+    {
+        numeroDeLaSuerte = numero;
+        Debug.Log($"[{gameObject.name}] Número de la suerte establecido en: {numeroDeLaSuerte}");
     }
 
     public void EmpezarJuego()

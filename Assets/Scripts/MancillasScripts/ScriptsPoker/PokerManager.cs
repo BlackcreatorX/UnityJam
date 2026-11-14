@@ -8,6 +8,9 @@ using System;
 
 public class PokerManager : MonoBehaviour
 {
+    [Header("Número de la Suerte (Sistema Externo)")]
+    public int numeroDeLaSuerte = 0;
+    
     [Header("UI Instrucciones")]
     public GameObject panelInstrucciones;
     public GameObject botonIniciar;
@@ -114,6 +117,13 @@ public class PokerManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    // Función pública para pasar el dato del número de la suerte
+    public void EstablecerNumeroDeLaSuerte(int numero)
+    {
+        numeroDeLaSuerte = numero;
+        Debug.Log($"[{gameObject.name}] Número de la suerte establecido en: {numeroDeLaSuerte}");
     }
 
     public void EmpezarJuego()
