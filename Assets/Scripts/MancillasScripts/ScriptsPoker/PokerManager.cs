@@ -6,9 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 
-[RequireComponent(typeof(AudioSource))]
 public class PokerManager : MonoBehaviour
 {
+    [Header("Número de la Suerte (Sistema Externo)")]
+    public int numeroDeLaSuerte = 0;
+    
     [Header("UI Instrucciones")]
     public GameObject panelInstrucciones;
     public GameObject botonIniciar;
@@ -38,7 +40,6 @@ public class PokerManager : MonoBehaviour
     public AudioClip sonidoVictoriaDefinitiva; 
     public AudioClip sonidoDerrotaDefinitiva;  
     public AudioClip sonidoEmpate;             
-    private AudioSource audioSource;
 
     [Header("Ajustes Visuales")]
     public float velocidadReparto = 0.2f;
@@ -76,7 +77,6 @@ public class PokerManager : MonoBehaviour
 
     private void Start()
     {
-        audioSource = GetComponent<AudioSource>();
         if (actionButton != null) actionButtonText = actionButton.GetComponentInChildren<TextMeshProUGUI>();
         
         panelInstrucciones.SetActive(true);
@@ -113,10 +113,17 @@ public class PokerManager : MonoBehaviour
                 if (clickedCard != null && manoJugador.Contains(clickedCard))
                 {
                     clickedCard.ToggleDiscardSelection();
-                    ReproducirSonidoCarta();
+                    //ReproducirSonidoCarta();
                 }
             }
         }
+    }
+
+    // Función pública para pasar el dato del número de la suerte
+    public void EstablecerNumeroDeLaSuerte(int numero)
+    {
+        numeroDeLaSuerte = numero;
+        Debug.Log($"[{gameObject.name}] Número de la suerte establecido en: {numeroDeLaSuerte}");
     }
 
     public void EmpezarJuego()
@@ -196,19 +203,17 @@ public class PokerManager : MonoBehaviour
 
     private void ReproducirSonidoCarta()
     {
-        if (audioSource != null && sonidoMovimientoCarta != null)
+        if (sonidoMovimientoCarta != null) 
         {
-            audioSource.pitch = UnityEngine.Random.Range(0.9f, 1.1f);
-            audioSource.PlayOneShot(sonidoMovimientoCarta);
+            AudioManager.Instance.PlaySFXRandomPitch(sonidoMovimientoCarta);
         }
     }
 
     private void ReproducirSonidoResultado(AudioClip clip)
     {
-        if (audioSource != null && clip != null)
+        if (clip != null) 
         {
-            audioSource.pitch = 1f; 
-            audioSource.PlayOneShot(clip);
+            AudioManager.Instance.PlaySFX(clip);
         }
     }
 

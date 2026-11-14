@@ -4,9 +4,11 @@ using TMPro;
 using System.Collections;
 using System.Collections.Generic;
 
-[RequireComponent(typeof(AudioSource))]
 public class MinigameManager : MonoBehaviour
 {
+    [Header("Número de la Suerte (Sistema Externo)")]
+    public int numeroDeLaSuerte = 0;
+    
     [Header("UI Instrucciones y Rondas")]
     public GameObject panelInstrucciones;
     public GameObject botonIniciar;
@@ -34,7 +36,6 @@ public class MinigameManager : MonoBehaviour
     public AudioClip sonidoVictoriaDefinitiva; 
     public AudioClip sonidoDerrotaDefinitiva;  
     public AudioClip sonidoEmpate;             
-    private AudioSource audioSource;
 
     [Header("Ajustes de Tiempos")]
     public float tiempoMemorizacion = 1.0f;  
@@ -58,7 +59,6 @@ public class MinigameManager : MonoBehaviour
 
     private void Start()
     {
-        audioSource = GetComponent<AudioSource>();
         if (actionButton != null) actionButtonText = actionButton.GetComponentInChildren<TextMeshProUGUI>();
         
         panelInstrucciones.SetActive(true);
@@ -93,6 +93,13 @@ public class MinigameManager : MonoBehaviour
                 if (clickedCard != null && activeCards.Contains(clickedCard)) clickedCard.Select();
             }
         }
+    }
+
+    // Función pública para pasar el dato del número de la suerte
+    public void EstablecerNumeroDeLaSuerte(int numero)
+    {
+        numeroDeLaSuerte = numero;
+        Debug.Log($"[{gameObject.name}] Número de la suerte establecido en: {numeroDeLaSuerte}");
     }
 
     public void EmpezarJuego()
@@ -145,19 +152,17 @@ public class MinigameManager : MonoBehaviour
 
     private void ReproducirSonidoGenerico(AudioClip clip)
     {
-        if (audioSource != null && clip != null)
+        if (clip != null) 
         {
-            audioSource.pitch = Random.Range(0.9f, 1.1f);
-            audioSource.PlayOneShot(clip);
+            AudioManager.Instance.PlaySFXRandomPitch(clip);
         }
     }
 
     private void ReproducirSonidoResultado(AudioClip clip)
     {
-        if (audioSource != null && clip != null)
+        if (clip != null) 
         {
-            audioSource.pitch = 1f; 
-            audioSource.PlayOneShot(clip);
+            AudioManager.Instance.PlaySFX(clip);
         }
     }
 
